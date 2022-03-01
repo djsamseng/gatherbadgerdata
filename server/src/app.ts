@@ -1,6 +1,6 @@
 import bodyParser from "body-parser";
 import cors from "cors";
-import express, { Router } from "express";
+import express, { Router, Response } from "express";
 import Sqlite from "sqlite3";
 
 const app = express();
@@ -43,8 +43,9 @@ db.serialize(() => {
     (?,?)
   `);
   statement.run(["test_url", "test_img"], function (error) {
-    console.log(this, error);
-    const id = this.lastID;
+    if (error) {
+      console.error(error);
+    }
     const tagsStatement = db.prepare(`
       INSERT INTO tags
       (gift_id, tag)
@@ -59,8 +60,9 @@ db.serialize(() => {
     });
   });
   statement.run(["test_url2", "test_img2"], function (error) {
-    console.log(this, error);
-    const id = this.lastID;
+    if (error) {
+      console.log(this, error);
+    }
     const tagsStatement = db.prepare(`
       INSERT INTO tags
       (gift_id, tag)
@@ -72,15 +74,6 @@ db.serialize(() => {
       if (error) {
         console.error(error);
       }
-      db.each(
-        `SELECT gifts.id as id, gifts.url as url, gifts.img as img, tags.tag as tag FROM gifts
-         JOIN tags ON gifts.id = tags.gift_id
-        `, (err, row) => {
-        if (err) {
-          console.error(err);
-        }
-        console.log(`id:${row.id} url:${row.url} img:${row.img} tag:${row.tag}`);
-      });
     });
   });
   statement.finalize();
@@ -93,4 +86,43 @@ const server = app.listen(PORT, () => {
 routes.post("/goto", jsonParser, async (req, resp) => {
    console.log("Req:", req.body);
    resp.send({ success: true });
+});
+
+export type GetGiftsResponse = {
+  gifts: Record<string, {
+    id: string;
+    url: string;
+    img: string;
+    tags: Array<string>;
+  }>;
+};
+routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse>) => {
+  db.serialize(() => {
+    db.all(
+      `SELECT gifts.id as id, gifts.url as url, gifts.img as img, tags.tag as tag FROM gifts
+       JOIN tags ON gifts.id = tags.gift_id
+      `, (err, rows) => {
+      if (err) {
+        console.error(err);
+      }
+      const gifts: GetGiftsResponse["gifts"] = {};
+      for (const row of rows) {
+        console.log(`id:${row.id} url:${row.url} img:${row.img} tag:${row.tag}`);
+        if (row.id in gifts) {
+          gifts[row.id].tags.push(row.tag);
+        }
+        else {
+          gifts[row.id] = {
+            id: row.id,
+            url: row.url,
+            img: row.img,
+            tags: [ row.tag ],
+          }
+        }
+      }
+      resp.send({
+        "gifts": gifts,
+      })
+    });
+  });
 });
