@@ -23,6 +23,7 @@ db.serialize(() => {
       id INTEGER PRIMARY KEY,
       url TEXT NOT NULL,
       img TEXT NOT NULL,
+      title TEXT NOT NULL,
       iframe TEXT
     )
   `)
@@ -38,11 +39,11 @@ db.serialize(() => {
   `);
 
   const statement = db.prepare(`INSERT INTO gifts
-    (url, img)
+    (url, img, title)
     VALUES
-    (?,?)
+    (?,?,?)
   `);
-  statement.run(["test_url", "test_img"], function (error) {
+  statement.run(["test_url", "test_img", "title1"], function (error) {
     if (error) {
       console.error(error);
     }
@@ -59,7 +60,7 @@ db.serialize(() => {
       }
     });
   });
-  statement.run(["test_url2", "test_img2"], function (error) {
+  statement.run(["test_url2", "test_img2", "title2"], function (error) {
     if (error) {
       console.log(this, error);
     }
@@ -91,6 +92,7 @@ routes.post("/goto", jsonParser, async (req, resp) => {
 export type GetGiftsResponse = {
   gifts: Record<string, {
     id: string;
+    title: string;
     url: string;
     img: string;
     tags: Array<string>;
@@ -99,7 +101,7 @@ export type GetGiftsResponse = {
 routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse>) => {
   db.serialize(() => {
     db.all(
-      `SELECT gifts.id as id, gifts.url as url, gifts.img as img, tags.tag as tag FROM gifts
+      `SELECT gifts.id as id, gifts.url as url, gifts.img as img, gifts.title as title, tags.tag as tag FROM gifts
        JOIN tags ON gifts.id = tags.gift_id
       `, (err, rows) => {
       if (err) {
@@ -116,6 +118,7 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
             id: row.id,
             url: row.url,
             img: row.img,
+            title: row.title,
             tags: [ row.tag ],
           }
         }
