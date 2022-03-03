@@ -12,45 +12,78 @@ type GiftFormProps = {
 type GiftFormState = {
   id: string;
   title: string;
-  amazonString: string;
-  customLink: string;
-  customImage: string;
+  amazon: string;
+  img: string;
+  url: string;
   tags: string;
 }
 class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
   constructor(props: GiftFormProps) {
     super(props);
+    const state = {
+      id: "",
+      title: "",
+      amazon: "",
+      img: "",
+      url: "",
+      tags: "",
+    };
+    if (this.props.gift) {
+      state.id = this.props.gift.id;
+      state.title = this.props.gift.title;
+      state.tags = this.props.gift.tags.join(",")
+    }
+    this.state = state;
   }
 
   public render() {
+    const entries = [
+      { label: "Id",                        name: "id",     handler: this.textFieldUpdate.bind(this), disabled: true,  },
+      { label: "Title",                     name: "title",  handler: this.textFieldUpdate.bind(this), },
+      { label: "Amazon Large Image String", name: "amazon", handler: this.textFieldUpdate.bind(this), },
+      { label: "Custom Image",              name: "img",    handler: this.textFieldUpdate.bind(this), },
+      { label: "Custom Link",               name: "url",    handler: this.textFieldUpdate.bind(this), },
+      { label: "Tags Comma Seperated",      name: "tags",   handler: this.textFieldUpdate.bind(this), },
+    ]
+    const items:Array<any> = [];
+    console.log(this.state);
+    entries.forEach(entry => {
+      const inputId = `input${entry.name}`;
+      items.push(
+        (
+          <div className="col-span-1">
+            <label htmlFor={inputId}><span>{entry.label} </span></label>
+          </div>
+        )
+      );
+      items.push(
+        (
+          <div className="col-span-2 flex flex-col items-stretch mx-2 text-black">
+            <input
+              id={inputId}
+              name={entry.name}
+              type="text"
+              disabled={entry.disabled}
+              className="disabled:bg-gray-500"
+              value={(this.state as any)[entry.name]}
+              onChange={entry.handler} />
+          </div>
+        )
+      )
+    })
     return (
-      <form className="flex flex-col items-end space-y-2 mx-14">
-        <label className="space-x-1">
-          <span>Id </span>
-          <input type="text" disabled={true} className="disabled:bg-gray-500"/>
-        </label>
-        <label className="space-x-1">
-          <span>Title </span>
-          <input type="text"/>
-        </label>
-        <label className="space-x-1">
-          <span> Amazon Large Image String</span>
-          <input type="text"/>
-        </label>
-        <label className="space-x-1">
-          <span> Custom Link</span>
-          <input type="text"/>
-        </label>
-        <label className="space-x-1">
-          <span> Custom Image</span>
-          <input type="text"/>
-        </label>
-        <label className="space-x-1">
-          <span> Tags comma seperated</span>
-          <input type="text"/>
-        </label>
+      <form className="grid grid-cols-3 gap-4 m-2">
+        { items.map(item => item) }
       </form>
     );
+  }
+
+  private textFieldUpdate(evt: React.ChangeEvent<HTMLInputElement>) {
+    evt.preventDefault();
+    console.log(evt.target.name);
+    this.setState({
+      [evt.target.name]: evt.target.value,
+    } as any);
   }
 }
 
@@ -75,7 +108,7 @@ class App extends React.Component<AppProps, AppState> {
     return (
       <div className="App">
         <div className="App-header">
-          <div className="mb-14 w-full">
+          <div className="my-14 w-full">
             <GiftForm />
           </div>
           <ul style={{listStyle: "none"}}>
