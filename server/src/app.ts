@@ -1,7 +1,8 @@
 import bodyParser from "body-parser";
 import cors from "cors";
-import express, { Router, Response } from "express";
+import express, { Router, Request, Response } from "express";
 import Sqlite from "sqlite3";
+import fs from "fs";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -15,16 +16,16 @@ app.use(routes);
 const db = new (Sqlite.verbose()).Database("gatherbadger.db");
 
 db.serialize(() => {
-  db.run(`DROP TABLE IF EXISTS gifts`);
-  db.run(`DROP TABLE IF EXISTS tags`);
-
   db.run(`
     CREATE TABLE IF NOT EXISTS gifts (
       id INTEGER PRIMARY KEY,
       url TEXT NOT NULL,
       img TEXT NOT NULL,
       title TEXT NOT NULL,
-      iframe TEXT
+      iframe TEXT,
+      img_amazon_ad TEXT,
+      img_amazon_orig TEXT,
+      desc TEXT
     )
   `)
 
@@ -34,74 +35,83 @@ db.serialize(() => {
       gift_id INTEGER NOT NULL,
       tag TEXT NOT NULL,
 
-      FOREIGN KEY(gift_id) REFERENCES gifts(id)
+      FOREIGN KEY(gift_id) REFERENCES gifts(id) ON DELETE CASCADE
     )
   `);
-
-  const statement = db.prepare(`INSERT INTO gifts
-    (url, img, title)
-    VALUES
-    (?,?,?)
-  `);
-  statement.run(["test_url", "test_img", "title1"], function (error) {
-    if (error) {
-      console.error(error);
-    }
-    const tagsStatement = db.prepare(`
-      INSERT INTO tags
-      (gift_id, tag)
-      VALUES(?,?)
-    `);
-    tagsStatement.run([this.lastID, "test_tag"]);
-    tagsStatement.run([this.lastID, "test_tag2"]);
-    tagsStatement.finalize(function(error) {
-      if (error) {
-        console.error(error);
-      }
-    });
-  });
-  statement.run(["test_url2", "test_img2", "title2"], function (error) {
-    if (error) {
-      console.log(this, error);
-    }
-    const tagsStatement = db.prepare(`
-      INSERT INTO tags
-      (gift_id, tag)
-      VALUES(?,?)
-    `);
-    tagsStatement.run([this.lastID, "test_tag_b"]);
-    tagsStatement.run([this.lastID, "test_tag_b2"]);
-    tagsStatement.finalize(function(error) {
-      if (error) {
-        console.error(error);
-      }
-    });
-  });
-  statement.finalize();
 });
 
 
 const server = app.listen(PORT, () => {
     console.log("Server running on port:", PORT);
 });
-routes.post("/goto", jsonParser, async (req, resp) => {
-   console.log("Req:", req.body);
-   resp.send({ success: true });
-});
+
+async function insertNewGift(gift: Gift) {
+  return new Promise((fulfill, reject) => {
+    const statement = db.prepare(`INSERT INTO gifts
+      (url, img, title, iframe, img_amazon_ad, img_amazon_orig, desc)
+      VALUES
+      (?,   ?,   ?,     ?,      ?,             ?,               ?)
+    `);
+    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc], function (error) {
+      if (error) {
+        console.error(error);
+        reject(error);
+      }
+      const tagsStatement = db.prepare(`
+        INSERT INTO tags
+        (gift_id, tag)
+        VALUES(?,?)
+      `);
+      for (const tag of gift.tags) {
+        tagsStatement.run([this.lastID, tag]);
+      }
+      tagsStatement.finalize(function(error) {
+        if (error) {
+          console.error(error);
+          reject(error);
+        }
+        fulfill({});
+      });
+    });
+  });
+}
+
+async function deleteGift(gift: Gift) {
+  return new Promise((fulfill, reject) => {
+    db.serialize(() => {
+      db.run("DELETE FROM gifts WHERE id=(?)", gift.id, function(error) {
+        if (error) {
+          console.log(error);
+          reject(error);
+        }
+        fulfill({});
+      });
+    });
+  });
+}
+
+export type Gift = {
+  id: string;
+  title: string;
+  url: string;
+  img: string;
+  img_amazon_ad?: string;
+  img_amazon_orig?: string;
+  iframe?: string;
+  desc?: string;
+  tags: Array<string>;
+}
 
 export type GetGiftsResponse = {
-  gifts: Record<string, {
-    id: string;
-    title: string;
-    url: string;
-    img: string;
-    tags: Array<string>;
-  }>;
+  gifts: Record<string, Gift>;
 };
 routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse>) => {
   db.serialize(() => {
     db.all(
-      `SELECT gifts.id as id, gifts.url as url, gifts.img as img, gifts.title as title, tags.tag as tag FROM gifts
+      `SELECT gifts.id as id, gifts.url as url, gifts.img as img, gifts.title as title, gifts.iframe as iframe,
+              gifts.img_amazon_ad as img_amazon_ad, gifts.img_amazon_orig, gifts.desc as desc,
+              tags.tag as tag
+       FROM gifts
        JOIN tags ON gifts.id = tags.gift_id
       `, (err, rows) => {
       if (err) {
@@ -109,7 +119,6 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
       }
       const gifts: GetGiftsResponse["gifts"] = {};
       for (const row of rows) {
-        console.log(`id:${row.id} url:${row.url} img:${row.img} tag:${row.tag}`);
         if (row.id in gifts) {
           gifts[row.id].tags.push(row.tag);
         }
@@ -118,6 +127,9 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
             id: row.id,
             url: row.url,
             img: row.img,
+            img_amazon_ad: row.img_amazon_ad,
+            img_amazon_orig: row.img_amazon_orig,
+            desc: row.desc,
             title: row.title,
             tags: [ row.tag ],
           }
@@ -127,5 +139,49 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
         "gifts": gifts,
       })
     });
+  });
+});
+
+export type AddGiftRequest = {
+  gift: Gift;
+};
+routes.post("/addgift", jsonParser, async(req: Request<AddGiftRequest>, resp) => {
+  const gift: Gift = req.body.gift;
+  try {
+    await insertNewGift(gift);
+  }
+  catch (error) {
+    resp.status(400).send(error);
+    return;
+  }
+  resp.send({});
+});
+
+export type DeleteGiftRequest = {
+  gift: Gift;
+};
+routes.post("/deletegift", jsonParser, async(req: Request<DeleteGiftRequest>, resp) => {
+  const gift: Gift = req.body.gift;
+  try {
+    await deleteGift(gift);
+  }
+  catch (error) {
+    resp.status(400).send(error);
+    return;
+  }
+  resp.send({});
+});
+
+export type ExportGiftsRequest = {
+  gifts: Record<string, Gift>;
+};
+routes.post("/exportgifts", jsonParser, async(req: Request<ExportGiftsRequest>, resp) => {
+  const filePath = __dirname + "/gifts-source.json";
+  fs.writeFile("./gifts-source.json", JSON.stringify(Object.values(req.body.gifts), null, 4), (error) => {
+    if (error) {
+      console.error(error);
+      return;
+    }
+    resp.send({});
   });
 });
