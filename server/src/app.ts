@@ -177,7 +177,10 @@ export type ExportGiftsRequest = {
 };
 routes.post("/exportgifts", jsonParser, async(req: Request<ExportGiftsRequest>, resp) => {
   const filePath = __dirname + "/gifts-source.json";
-  fs.writeFile("./gifts-source.json", JSON.stringify(Object.values(req.body.gifts), null, 4), (error) => {
+  const dataString = JSON.stringify({
+    data: Object.values(req.body.gifts),
+  }, null, 4);
+  fs.writeFile("./gifts-source.json", dataString, (error) => {
     if (error) {
       console.error(error);
       return;
