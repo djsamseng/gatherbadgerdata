@@ -271,7 +271,7 @@ class App extends React.Component<AppProps, AppState> {
                   }
                   return (
                     <div key={gift.id} className="flex flex-row items-center justify-items-stretch">
-                      <div className="flex-1 flex flex-col items-stretch">
+                      <div className="flex-1 flex flex-col items-stretch my-2">
                         <Preview gift={gift} />
                         {tag}
                       </div>
