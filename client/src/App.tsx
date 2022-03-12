@@ -10,13 +10,16 @@ function newGift(): Gift {
   return {
     id: "",
     title: "",
+    real_title: "",
     url: "",
     img: "",
     img_amazon_ad: "",
     img_amazon_orig: "",
     iframe: "",
     desc: "",
+    real_desc: "",
     price: -1.0,
+    score: 0,
     tags: [],
   };
 }
@@ -25,11 +28,15 @@ type PreviewProps = {
   gift: Gift;
 }
 type PreviewState = {
+  score: number;
 };
 
 class Preview extends React.Component<PreviewProps, PreviewState> {
   constructor(props: PreviewProps) {
     super(props);
+    this.state = {
+      score: props.gift.score,
+    }
   }
 
   public render() {
@@ -42,6 +49,7 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
         <li className="mt-5 border rounded p-4 border-stone-200 bg-stone-50 hover:bg-white dark:bg-gray-900 dark:border-gray-800 dark:hover:bg-gray-800" key={item.id}>
           <a target="_blank" rel="noopener" href={item.url}>
             <p className="text-2xl">{item.title}</p>
+            <p className="text-sm">{item.real_title}</p>
             <div className="flex flex-row items-baseline">
               {img}
             </div>
@@ -57,9 +65,16 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
             }
           </div>
           <div className="mt-1"><span>{item.url.indexOf("amazon") >= 0 ? "Amazon":""} ${item.price}</span></div>
+          <div className="mt-1 text-black"><input type="number" value={item.score} onChange={this.onScoreChange.bind(this)}/></div>
         </li>
       </div>
     )
+  }
+  private onScoreChange(evt: React.ChangeEvent<HTMLInputElement>) {
+    this.props.gift.score = parseInt(evt.target.value, 10);
+    this.setState({
+      score: this.props.gift.score,
+    })
   }
 }
 
@@ -70,12 +85,15 @@ type GiftFormProps = {
 type GiftFormState = {
   id: string;
   title: string;
+  real_title: string;
   amazon: string;
   img: string;
   url: string;
   tags: string;
   desc: string;
+  real_desc: string;
   price: number;
+  score: number;
 
   preview?: GetGiftsResponse["gifts"][string],
 }
@@ -85,36 +103,45 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
     const state = {
       id: "",
       title: "",
+      real_title: "",
       amazon: "",
       img: "",
       url: "",
       tags: "",
       desc: "",
+      real_desc: "",
       price: -1.0,
+      score: 0,
     };
     if (this.props.gift) {
       state.id = this.props.gift.id;
       state.title = this.props.gift.title;
+      state.real_title = this.props.gift.real_title;
       state.amazon = this.props.gift.img_amazon_orig || "";
       state.img = this.props.gift.img;
       state.url = this.props.gift.url;
       state.tags = this.props.gift.tags.join(",");
       state.desc = this.props.gift.desc || "";
+      state.real_desc = this.props.gift.real_desc;
       state.price = this.props.gift.price;
+      state.score = this.props.gift.score;
     }
     this.state = state;
   }
 
   public render() {
     const entries = [
-      { label: "Id",                        name: "id",     handler: this.textFieldUpdate.bind(this), disabled: true,  },
-      { label: "Title",                     name: "title",  handler: this.textFieldUpdate.bind(this), },
-      { label: "Amazon Large Image String", name: "amazon", handler: this.textFieldUpdate.bind(this), },
-      { label: "Custom Image",              name: "img",    handler: this.textFieldUpdate.bind(this), },
-      { label: "Custom Link",               name: "url",    handler: this.textFieldUpdate.bind(this), },
-      { label: "Tags Comma Seperated",      name: "tags",   handler: this.textFieldUpdate.bind(this), },
-      { label: "Description",               name: "desc",   handler: this.textFieldUpdate.bind(this), },
-      { label: "Price",                     name: "price",  handler: this.textFieldUpdate.bind(this), }
+      { label: "Id",                        name: "id",          handler: this.textFieldUpdate.bind(this), disabled: true,  },
+      { label: "Title",                     name: "title",       handler: this.textFieldUpdate.bind(this), },
+      { label: "Real Title",                name: "real_title",  handler: this.textFieldUpdate.bind(this), },
+      { label: "Amazon Large Image String", name: "amazon",      handler: this.textFieldUpdate.bind(this), },
+      { label: "Custom Image",              name: "img",         handler: this.textFieldUpdate.bind(this), },
+      { label: "Custom Link",               name: "url",         handler: this.textFieldUpdate.bind(this), },
+      { label: "Tags Comma Seperated",      name: "tags",        handler: this.textFieldUpdate.bind(this), },
+      { label: "Description",               name: "desc",        handler: this.textFieldUpdate.bind(this), },
+      { label: "Real Description",          name: "real_desc",   handler: this.textFieldUpdate.bind(this), },
+      { label: "Price",                     name: "price",       handler: this.textFieldUpdate.bind(this), },
+      { label: "Score",                     name: "score",       handler: this.textFieldUpdate.bind(this), }
     ]
 
 
@@ -167,6 +194,12 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
         price,
       });
     }
+    else if (evt.target.name === "score") {
+      let score = parseInt(evt.target.value);
+      this.setState({
+        score,
+      })
+    }
     else {
       this.setState({
         [evt.target.name]: evt.target.value,
@@ -214,13 +247,16 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
     const gift: Gift = {
       id: this.state.id,
       title: this.state.title,
+      real_title: this.state.real_title,
       url: url,
       img: img,
       img_amazon_ad: amazon_img_ad,
       img_amazon_orig: this.state.amazon,
       price: this.state.price,
+      score: this.state.score,
       tags: this.state.tags.split(","),
       desc: this.state.desc,
+      real_desc: this.state.real_desc,
     };
     return gift;
   }
@@ -270,30 +306,53 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   public render() {
+    const gifts = Object.values(this.state.gifts).sort((a, b) => b.score - a.score);
     return (
         <div className="App">
           <div className="App-header">
             <div className="my-14 w-full">
               <GiftForm key={this.state.editGift ? this.state.editGift.id : 0} refresh={this.getGifts.bind(this)} gift={this.state.editGift}/>
             </div>
-            <div className="mb-10">
+            <div className="mb-10 space-x-2">
               <button type="button" className="border rounded border-white px-2" onClick={this.onExport.bind(this)}>Export</button>
+              <button type="button" className="border rounded border-white px-2" onClick={this.onSort.bind(this)}>Sort</button>
+              <button type="button" className="border rounded border-white px-2" onClick={this.onUpdateAll.bind(this)}>Update All</button>
             </div>
             <ul className="mb-10 list-none flex flex-col items-stretch">
               {
-                Object.values(this.state.gifts).map(gift => {
+                gifts.map(gift => {
                   let tag = (<div></div>);
                   if (gift.img_amazon_orig && gift.img_amazon_orig.length > 0) {
                     tag = (<div className="text-lg">Amazon Link</div>)
                   }
                   return (
+                    <div>
                     <div key={gift.id} className="flex flex-row items-center justify-items-stretch">
                       <div className="flex-1 flex flex-col items-stretch my-2">
                         <Preview gift={gift} />
                         {tag}
                       </div>
-                      <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
+                      {
+                        gift === this.state.editGift ?
+                        (
+                          <button type="button" className="border rounded bg-blue-800 border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
+                        ) :
+                        (
+                          <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
+                        )
+                      }
+
                       <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onDelete.bind(this, gift)}>Delete</button>
+                    </div>
+                    {
+                      gift === this.state.editGift ? (
+                        <div>
+                          <GiftForm key={gift.id} refresh={this.getGifts.bind(this)} gift={gift}/>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )
+                    }
                     </div>
 
                   );
@@ -308,10 +367,17 @@ class App extends React.Component<AppProps, AppState> {
 
   private async onEdit(gift: Gift, evt: React.MouseEvent<HTMLButtonElement>, ) {
     evt.preventDefault();
-    this.setState({
-      editGift: gift,
-    });
-    window.scrollTo(0,0);
+    if (gift === this.state.editGift) {
+      this.setState({
+        editGift: undefined,
+      });
+    }
+    else {
+      this.setState({
+        editGift: gift,
+      });
+    }
+
   }
 
   private async onDelete(gift: Gift, evt: React.MouseEvent<HTMLButtonElement>) {
@@ -327,6 +393,26 @@ class App extends React.Component<AppProps, AppState> {
     const resp = await axios.post(BASE_URL + "/exportgifts", {
       gifts: this.state.gifts,
     });
+  }
+
+  private async onSort(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    this.forceUpdate();
+  }
+
+  private async onUpdateAll(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    for (const gift of Object.values(this.state.gifts)) {
+      try {
+        const resp = await axios.post(BASE_URL + "/addgift", {
+          gift,
+        });
+      }
+      catch (error) {
+        console.error("Failed to updateAll:", error, "for gift:", gift);
+      }
+    }
+    await this.getGifts();
   }
 
   private async getGifts() {

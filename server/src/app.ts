@@ -27,7 +27,10 @@ db.serialize(() => {
       iframe TEXT,
       img_amazon_ad TEXT,
       img_amazon_orig TEXT,
-      desc TEXT
+      desc TEXT,
+      price REAL,
+      real_title TEXT,
+      real_desc TEXT
     )
   `)
 
@@ -72,7 +75,7 @@ db.serialize(() => {
     }
   })
   db.all(`
-    SELECT COUNT(*) AS num_cols FROM pragma_table_info("gifts") WHERE name="price"
+    SELECT COUNT(*) AS num_cols FROM pragma_table_info("gifts") WHERE name="score"
   `, (error, rows) => {
     if (error) {
       console.error(error);
@@ -81,7 +84,7 @@ db.serialize(() => {
       console.log("Should add");
       db.run(`
         ALTER TABLE gifts
-        ADD COLUMN price REAL NOT NULL DEFAULT -1
+        ADD COLUMN score INTEGER NOT NULL DEFAULT 0
       `)
     }
   })
@@ -93,16 +96,14 @@ const server = app.listen(PORT, () => {
 });
 
 async function insertNewGift(gift: Gift) {
-  if (gift.price < 0 && gift.url.indexOf("amazon") >= 0) {
-    gift.price = await getAmazonPrice(gift);
-  }
+  await setAmazonDetails(gift);
   return new Promise((fulfill, reject) => {
     const statement = db.prepare(`INSERT INTO gifts
-      (url, img, title, iframe, img_amazon_ad, img_amazon_orig, desc, price)
+                  (url,      img,      title,      iframe,      img_amazon_ad,      img_amazon_orig,      desc,      price,      real_title,      real_desc,      score)
       VALUES
-      (?,   ?,   ?,     ?,      ?,             ?,               ?,    ?)
+                  (?,        ?,        ?,          ?,           ?,                  ?,                    ?,         ?,          ?,               ?,              ?)
     `);
-    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc, gift.price], function (error) {
+    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc, gift.price, gift.real_title, gift.real_desc, gift.score], function (error) {
       if (error) {
         console.error(error);
         reject(error);
@@ -126,35 +127,69 @@ async function insertNewGift(gift: Gift) {
   });
 }
 
-async function getAmazonPrice(gift: Gift): Promise<number> {
+function getAmazonPrice(html: cheerio.Root): number {
   try {
-    const resp = await axios.get(gift.url);
-    const html = Cheerio.load(resp.data);
     const dollars = html("span.a-price-whole").first().text();
     const cents = html("span.a-price-fraction").first().text();
     let price = parseFloat(html("span.a-offscreen").first().text().substring(1));
     if (isNaN(price) && dollars.length > 0 && cents.length > 0) {
       price = parseFloat(dollars + cents);
     }
-    console.log(`Got price ${dollars}${cents} ${price} for ${gift.url}`);
+    console.log(`Got price ${dollars}${cents} ${price}`);
     return price;
   }
   catch (error) {
-    console.error("Failed to get gift price:", error, gift.url);
+    console.error("Failed to get gift price:", error);
     return -1;
   }
 }
 
-async function updateExistingGift(gift: Gift) {
-  if (gift.price < 0 && gift.url.indexOf("amazon") >= 0) {
-    gift.price = await getAmazonPrice(gift);
+function getAmazonTitle(html: cheerio.Root): string {
+  try {
+    return html("#productTitle").text();
   }
+  catch (error) {
+    console.error("Failed to get amazon title:", error);
+    return "";
+  }
+}
+
+function getAmazonDesc(html: cheerio.Root): string {
+  try {
+    return html("#productDescription").text();
+  }
+  catch (error) {
+    console.error("Failed to get amazon desc:", error);
+    return "";
+  }
+}
+
+async function setAmazonDetails(gift: Gift) {
+  if (gift.url.indexOf("amazon") >= 0) {
+    if (gift.price < 0 || gift.real_title.length === 0) {
+      try {
+        console.log("Setting amazon details for url:", gift.url);
+        const resp = await axios.get(gift.url);
+        const html = Cheerio.load(resp.data);
+        gift.price = getAmazonPrice(html);
+        gift.real_title = getAmazonTitle(html);
+        gift.real_desc = getAmazonDesc(html);
+      }
+      catch (error) {
+        console.error("Failed to setAmazonDetails");
+      }
+    }
+  }
+}
+
+async function updateExistingGift(gift: Gift) {
+  await setAmazonDetails(gift);
   return new Promise((fulfill, reject) => {
     console.log("UPDATING GIFT:", gift.id)
     const statement = db.prepare(`UPDATE gifts
-      SET          url=?,    img=?,    title=?,    iframe=?,    img_amazon_ad=?,    img_amazon_orig=?,    desc=?,    price=?     WHERE id=?
+      SET          url=?,    img=?,    title=?,    iframe=?,    img_amazon_ad=?,    img_amazon_orig=?,    desc=?,    price=?,    real_desc=?,    real_title=?,    score=?     WHERE id=?
     `);
-    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc, gift.price, gift.id], function (error) {
+    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc, gift.price, gift.real_desc, gift.real_title, gift.score, gift.id], function (error) {
       if (error) {
         console.error(error);
         reject(error);
@@ -207,12 +242,15 @@ async function deleteGift(gift: Gift) {
 export type Gift = {
   id: string;
   title: string;
+  real_title: string;
   url: string;
   img: string;
   img_amazon_ad?: string;
   img_amazon_orig?: string;
   iframe?: string;
   desc?: string;
+  real_desc: string;
+  score: number;
   price: number;
   tags: Array<string>;
 }
@@ -225,6 +263,7 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
     db.all(
       `SELECT gifts.id as id, gifts.url as url, gifts.img as img, gifts.title as title, gifts.iframe as iframe,
               gifts.img_amazon_ad as img_amazon_ad, gifts.img_amazon_orig, gifts.desc as desc, gifts.price as price,
+              gifts.real_title as real_title, gifts.real_desc as real_desc, gifts.score as score,
               tags2.tag as tag
        FROM gifts
        JOIN tags2 ON gifts.id = tags2.gift_id
@@ -247,6 +286,9 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
             desc: row.desc,
             price: row.price,
             title: row.title,
+            real_title: row.real_title,
+            real_desc: row.real_desc,
+            score: row.score,
             tags: [ row.tag ],
           }
         }
