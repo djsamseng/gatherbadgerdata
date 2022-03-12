@@ -16,6 +16,7 @@ function newGift(): Gift {
     img_amazon_orig: "",
     iframe: "",
     desc: "",
+    price: -1.0,
     tags: [],
   };
 }
@@ -73,6 +74,7 @@ type GiftFormState = {
   url: string;
   tags: string;
   desc: string;
+  price: number;
 
   preview?: GetGiftsResponse["gifts"][string],
 }
@@ -87,6 +89,7 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
       url: "",
       tags: "",
       desc: "",
+      price: -1.0,
     };
     if (this.props.gift) {
       state.id = this.props.gift.id;
@@ -96,6 +99,7 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
       state.url = this.props.gift.url;
       state.tags = this.props.gift.tags.join(",");
       state.desc = this.props.gift.desc || "";
+      state.price = this.props.gift.price;
     }
     this.state = state;
   }
@@ -109,7 +113,10 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
       { label: "Custom Link",               name: "url",    handler: this.textFieldUpdate.bind(this), },
       { label: "Tags Comma Seperated",      name: "tags",   handler: this.textFieldUpdate.bind(this), },
       { label: "Description",               name: "desc",   handler: this.textFieldUpdate.bind(this), },
+      { label: "Price",                     name: "price",  handler: this.textFieldUpdate.bind(this), }
     ]
+
+
     const items:Array<any> = [];
     entries.forEach(entry => {
       const inputId = `input${entry.name}`;
@@ -153,9 +160,17 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
 
   private textFieldUpdate(evt: React.ChangeEvent<HTMLInputElement>) {
     evt.preventDefault();
-    this.setState({
-      [evt.target.name]: evt.target.value,
-    } as any);
+    if (evt.target.name === "price") {
+      let price = parseFloat(evt.target.value);
+      this.setState({
+        price,
+      });
+    }
+    else {
+      this.setState({
+        [evt.target.name]: evt.target.value,
+      } as any);
+    }
   }
 
   private onPreview(evt: React.MouseEvent<HTMLButtonElement>) {
@@ -202,6 +217,7 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
       img: img,
       img_amazon_ad: amazon_img_ad,
       img_amazon_orig: this.state.amazon,
+      price: this.state.price,
       tags: this.state.tags.split(","),
       desc: this.state.desc,
     };

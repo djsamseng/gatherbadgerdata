@@ -30,14 +30,59 @@ db.serialize(() => {
   `)
 
   db.run(`
-    CREATE TABLE IF NOT EXISTS tags (
+    CREATE TABLE IF NOT EXISTS tags2 (
       tag_id INTEGER PRIMARY KEY,
       gift_id INTEGER NOT NULL,
       tag TEXT NOT NULL,
 
-      FOREIGN KEY(gift_id) REFERENCES gifts(id) ON DELETE CASCADE
+      FOREIGN KEY(gift_id) REFERENCES gifts(id)
     )
   `);
+  db.all(`
+    SELECT COUNT(*) AS num_rows FROM tags2
+  `, (error, rows) => {
+    if (error) {
+      console.error(error);
+    }
+    console.log(rows);
+    if (rows[0].num_rows === 0) {
+      db.all(`
+        SELECT * from tags
+      `, (error, rows) => {
+        console.log("Got tags:", rows);
+        const statement = db.prepare(`
+          INSERT INTO tags2
+          (tag_id, gift_id, tag)
+          VALUES
+          (?,      ?,       ?)
+        `)
+        for (const row of rows) {
+          statement.run([row.tag_id, row.gift_id, row.tag])
+        }
+        statement.finalize((error) => {
+          if (error) {
+            console.error("Failed to copy tags", error);
+          }
+
+        })
+
+      });
+    }
+  })
+  db.all(`
+    SELECT COUNT(*) AS num_cols FROM pragma_table_info("gifts") WHERE name="price"
+  `, (error, rows) => {
+    if (error) {
+      console.error(error);
+    }
+    if (rows[0].num_cols === 0) {
+      console.log("Should add");
+      db.run(`
+        ALTER TABLE gifts
+        ADD COLUMN price REAL NOT NULL DEFAULT -1
+      `)
+    }
+  })
 });
 
 
@@ -48,17 +93,17 @@ const server = app.listen(PORT, () => {
 async function insertNewGift(gift: Gift) {
   return new Promise((fulfill, reject) => {
     const statement = db.prepare(`INSERT INTO gifts
-      (url, img, title, iframe, img_amazon_ad, img_amazon_orig, desc)
+      (url, img, title, iframe, img_amazon_ad, img_amazon_orig, desc, price)
       VALUES
-      (?,   ?,   ?,     ?,      ?,             ?,               ?)
+      (?,   ?,   ?,     ?,      ?,             ?,               ?,    ?)
     `);
-    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc], function (error) {
+    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc, gift.price], function (error) {
       if (error) {
         console.error(error);
         reject(error);
       }
       const tagsStatement = db.prepare(`
-        INSERT INTO tags
+        INSERT INTO tags2
         (gift_id, tag)
         VALUES(?,?)
       `);
@@ -76,15 +121,57 @@ async function insertNewGift(gift: Gift) {
   });
 }
 
+async function updateExistingGift(gift: Gift) {
+  return new Promise((fulfill, reject) => {
+    console.log("UPDATING GIFT:", gift.id)
+    const statement = db.prepare(`UPDATE gifts
+      SET          url=?,    img=?,    title=?,    iframe=?,    img_amazon_ad=?,    img_amazon_orig=?,    desc=?,    price=?     WHERE id=?
+    `);
+    statement.run([gift.url, gift.img, gift.title, gift.iframe, gift.img_amazon_ad, gift.img_amazon_orig, gift.desc, gift.price, gift.id], function (error) {
+      if (error) {
+        console.error(error);
+        reject(error);
+      }
+      db.run(`DELETE FROM tags2 WHERE gift_id=?`, [gift.id], (error) => {
+        if (error) {
+          console.error("Failed to delete tags:", error);
+        }
+        const tagsStatement = db.prepare(`
+          INSERT INTO tags2
+          (gift_id, tag)
+          VALUES(?,?)
+        `);
+        for (const tag of gift.tags) {
+          tagsStatement.run([gift.id, tag]);
+        }
+        tagsStatement.finalize(function(error) {
+          if (error) {
+            console.error(error);
+            reject(error);
+          }
+          fulfill({});
+        });
+      });
+    });
+  });
+}
+
 async function deleteGift(gift: Gift) {
   return new Promise((fulfill, reject) => {
+    console.log("Deleting gift", gift.id);
     db.serialize(() => {
       db.run("DELETE FROM gifts WHERE id=(?)", gift.id, function(error) {
         if (error) {
           console.log(error);
           reject(error);
         }
-        fulfill({});
+        db.run("DELETE FROM tags2 WHERE gift_id=(?)", gift.id, function(error) {
+          if (error) {
+            console.log(error);
+            reject(error);
+          }
+          fulfill({});
+        });
       });
     });
   });
@@ -99,6 +186,7 @@ export type Gift = {
   img_amazon_orig?: string;
   iframe?: string;
   desc?: string;
+  price: number;
   tags: Array<string>;
 }
 
@@ -109,10 +197,10 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
   db.serialize(() => {
     db.all(
       `SELECT gifts.id as id, gifts.url as url, gifts.img as img, gifts.title as title, gifts.iframe as iframe,
-              gifts.img_amazon_ad as img_amazon_ad, gifts.img_amazon_orig, gifts.desc as desc,
-              tags.tag as tag
+              gifts.img_amazon_ad as img_amazon_ad, gifts.img_amazon_orig, gifts.desc as desc, gifts.price as price,
+              tags2.tag as tag
        FROM gifts
-       JOIN tags ON gifts.id = tags.gift_id
+       JOIN tags2 ON gifts.id = tags2.gift_id
       `, (err, rows) => {
       if (err) {
         console.error(err);
@@ -130,6 +218,7 @@ routes.post("/getgifts", jsonParser, async (req, resp: Response<GetGiftsResponse
             img_amazon_ad: row.img_amazon_ad,
             img_amazon_orig: row.img_amazon_orig,
             desc: row.desc,
+            price: row.price,
             title: row.title,
             tags: [ row.tag ],
           }
@@ -148,7 +237,13 @@ export type AddGiftRequest = {
 routes.post("/addgift", jsonParser, async(req: Request<AddGiftRequest>, resp) => {
   const gift: Gift = req.body.gift;
   try {
-    await insertNewGift(gift);
+    if (gift.id.length > 0 || (gift.id as any as number) > 0) {
+      await updateExistingGift(gift);
+    }
+    else {
+      await insertNewGift(gift);
+    }
+
   }
   catch (error) {
     resp.status(400).send(error);
