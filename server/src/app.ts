@@ -3,6 +3,8 @@ import cors from "cors";
 import express, { Router, Request, Response } from "express";
 import Sqlite from "sqlite3";
 import fs from "fs";
+import axios from "axios";
+import Cheerio from "cheerio";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -91,6 +93,9 @@ const server = app.listen(PORT, () => {
 });
 
 async function insertNewGift(gift: Gift) {
+  if (gift.price < 0 && gift.url.indexOf("amazon") >= 0) {
+    gift.price = await getAmazonPrice(gift);
+  }
   return new Promise((fulfill, reject) => {
     const statement = db.prepare(`INSERT INTO gifts
       (url, img, title, iframe, img_amazon_ad, img_amazon_orig, desc, price)
@@ -121,7 +126,29 @@ async function insertNewGift(gift: Gift) {
   });
 }
 
+async function getAmazonPrice(gift: Gift): Promise<number> {
+  try {
+    const resp = await axios.get(gift.url);
+    const html = Cheerio.load(resp.data);
+    const dollars = html("span.a-price-whole").first().text();
+    const cents = html("span.a-price-fraction").first().text();
+    let price = parseFloat(html("span.a-offscreen").first().text().substring(1));
+    if (isNaN(price) && dollars.length > 0 && cents.length > 0) {
+      price = parseFloat(dollars + cents);
+    }
+    console.log(`Got price ${dollars}${cents} ${price} for ${gift.url}`);
+    return price;
+  }
+  catch (error) {
+    console.error("Failed to get gift price:", error, gift.url);
+    return -1;
+  }
+}
+
 async function updateExistingGift(gift: Gift) {
+  if (gift.price < 0 && gift.url.indexOf("amazon") >= 0) {
+    gift.price = await getAmazonPrice(gift);
+  }
   return new Promise((fulfill, reject) => {
     console.log("UPDATING GIFT:", gift.id)
     const statement = db.prepare(`UPDATE gifts

@@ -56,6 +56,7 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
               })
             }
           </div>
+          <div className="mt-1"><span>{item.url.indexOf("amazon") >= 0 ? "Amazon":""} ${item.price}</span></div>
         </li>
       </div>
     )
@@ -310,6 +311,7 @@ class App extends React.Component<AppProps, AppState> {
     this.setState({
       editGift: gift,
     });
+    window.scrollTo(0,0);
   }
 
   private async onDelete(gift: Gift, evt: React.MouseEvent<HTMLButtonElement>) {
