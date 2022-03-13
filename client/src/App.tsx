@@ -289,6 +289,7 @@ type AppProps = {};
 type AppState = {
   gifts: GetGiftsResponse["gifts"];
   editGift?: Gift;
+  searchText: string;
 };
 
 class App extends React.Component<AppProps, AppState> {
@@ -297,6 +298,7 @@ class App extends React.Component<AppProps, AppState> {
     this.state = {
       gifts: {},
       editGift: undefined,
+      searchText: "",
     }
   }
 
@@ -318,6 +320,10 @@ class App extends React.Component<AppProps, AppState> {
               <button type="button" className="border rounded border-white px-2" onClick={this.onUpdateAll.bind(this)}>Update All</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onResetSearchIndex.bind(this)}>Reset Search Index</button>
             </div>
+            <form className="mb-10 space-x-2 w-3/4 flex flex-col items-stretch" onSubmit={this.onSearchSubmit.bind(this)}>
+              <input type="text" className="text-black flex-1" value={this.state.searchText} onChange={this.onSearchTextChange.bind(this)} />
+              <button type="submit" className="border rounded border-white px-2 mt-2" onClick={this.onSearch.bind(this)}>Search</button>
+            </form>
             <ul className="mb-10 list-none flex flex-col items-stretch">
               {
                 gifts.map(gift => {
@@ -409,8 +415,25 @@ class App extends React.Component<AppProps, AppState> {
     await DataClient.resetSearchIndex();
   }
 
+  private async onSearchTextChange(evt: React.ChangeEvent<HTMLInputElement>) {
+    evt.preventDefault();
+    this.setState({
+      searchText: evt.target.value,
+    });
+  }
+
+  private async onSearch(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    await this.getGifts();
+  }
+
+  private async onSearchSubmit(evt: React.FormEvent<HTMLFormElement>) {
+    evt.preventDefault();
+    await this.getGifts();
+  }
+
   private async getGifts() {
-    const gifts = await DataClient.getGifts();
+    const gifts = await DataClient.searchGifts(this.state.searchText);
     this.setState({
       gifts,
       editGift: newGift(),

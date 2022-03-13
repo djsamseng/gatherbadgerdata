@@ -42,6 +42,145 @@ async function onExport(gifts: GetGiftsResponse["gifts"]) {
 }
 
 async function resetSearchIndex() {
+  await resetSearchIndexSupabase();
+}
+
+async function getGifts() {
+  if (READ_FROM_SUPABASE) {
+    return getGiftsSupabase();
+  }
+  else {
+    return getGiftsAxios();
+  }
+}
+
+async function searchGifts(query: string) {
+  return await searchGiftsSupabase(query);
+}
+
+export default {
+  getGifts,
+  upsertGift,
+  deleteGift,
+  onExport,
+  resetSearchIndex,
+  searchGifts,
+}
+
+
+async function getSupabaseDbGiftsWithTags() {
+  const { data, error, status } = await supabase.from("gifts").select("*, tags(tag)");
+  if (error && status !== 406) {
+    console.error("Supabase getGifts Error:", error, status);
+  }
+  if (data) {
+    return data as Array<SupabaseGift & { tags: [{tag: string; }] }>;
+  }
+  else {
+    console.error("Failed to get Supabase gifts", data, error, status);
+  }
+  return [];
+}
+
+async function supabaseGiftsToGiftsMap(data: Array<SupabaseGift & { tags: [{tag: string; }] }>) {
+  const toReturn: GetGiftsResponse["gifts"] = {};
+  for (const res of data) {
+    // Lie about the type so we can set it to the Gift tags type
+    const dbRes = res as any as SupabaseGift & { tags: string[] };
+    // @ts-ignore
+    const tags = dbRes.tags.map(tagObj => tagObj.tag);
+    dbRes.tags = tags;
+    const gift: Gift = dbRes;
+    toReturn[gift.id] = gift;
+  }
+  return toReturn;
+}
+
+async function getGiftsSupabase() {
+  const data = await getSupabaseDbGiftsWithTags();
+  return supabaseGiftsToGiftsMap(data);
+}
+
+async function getGiftsAxios() {
+  const resp = await axios.post(BASE_URL + "/getgifts", {});
+  console.log("RESP:", resp);
+  const data: GetGiftsResponse = resp.data;
+  return data.gifts;
+}
+
+async function upsertGiftAxios(gift: Gift) {
+  try {
+    const resp = await axios.post(BASE_URL + "/addgift", {
+      gift,
+    });
+  }
+  catch (error) {
+    console.error("Failed to submit:", error);
+  }
+}
+
+async function upsertGiftSupabase(gift: Gift) {
+  try {
+    const resp = await axios.post(BASE_URL + "/setgiftdetails", {
+      gift,
+    });
+    const data: SetGiftDetailsResponse = resp.data;
+    const supabaseGift = data.gift;
+    const { error } = await supabaseAdmin.from("gifts").upsert(supabaseGift, {
+      returning: "minimal",
+    });
+    if (error) {
+      console.error("Failed to submit supabase gifts:", error);
+    }
+    for (const tag of gift.tags) {
+      const supabaseTag: SupabaseTag = {
+        gift_id: gift.id,
+        tag: tag,
+      }
+      const { error } = await supabaseAdmin.from("tags").upsert(supabaseTag, {
+        returning: "minimal",
+      });
+      if (error) {
+        console.error("Failed to submit supabase tag:", tag, error);
+      }
+    }
+  }
+  catch (error) {
+    console.error("Failed to set details and submit supabase gift:", error);
+  }
+}
+
+async function deleteGiftAxios(gift: Gift) {
+  const resp = await axios.post(BASE_URL + "/deletegift", {
+    gift,
+  });
+}
+
+async function deleteGiftSupabase(gift: Gift) {
+
+  {
+    const { error } = await supabaseAdmin.from("tags").delete().match({ gift_id: gift.id });
+    if (error) {
+      console.error("Failed to delete gift tags from supabase:", error);
+    }
+  }
+  {
+    let { error } = await supabaseAdmin.from("gifts").delete().match({ id: gift.id });
+    if (error) {
+      console.error("Failed to delete gift from supabase:", error);
+    }
+  }
+}
+
+function sanitizeQueryWord(word: string) {
+  word = word.toLowerCase();
+  word = word.replace(/\W/g, '');
+  word = word.trimEnd();
+  word = word.trimStart();
+  return word;
+}
+
+async function resetSearchIndexSupabase() {
   const data = await getSupabaseDbGiftsWithTags();
   if (data.length === 0) {
     console.error("Failed to get supabase gifts");
@@ -60,11 +199,7 @@ async function resetSearchIndex() {
       descMatches: [],
     } as QueryToGiftObj;
   };
-  function sanitizeQueryWord(word: string) {
-    word = word.toLowerCase();
-    word = word.replace(/\W/g, '');
-    return word;
-  }
+
   for (const item of data) {
     for (const tagObj of item.tags) {
       const tag = sanitizeQueryWord(tagObj.tag);
@@ -155,120 +290,83 @@ async function resetSearchIndex() {
   }
 }
 
-async function getGifts() {
-  if (READ_FROM_SUPABASE) {
-    return getGiftsSupabase();
+/*
+DROP FUNCTION search_by_words;
+CREATE OR REPLACE FUNCTION search_by_words(words TEXT[], range_offset INTEGER, range_limit INTEGER)
+  RETURNS TABLE(id INTEGER,
+                title TEXT,
+                img TEXT,
+                url TEXT,
+                custom_desc TEXT,
+                score_sum REAL,
+                word_matches TEXT[])
+  LANGUAGE plpgsql AS
+$func$
+BEGIN
+  RETURN QUERY
+  SELECT gifts.id, gifts.title, gifts.img, gifts.url, gifts.custom_desc, res.score_sum, res.word_matches
+
+  FROM (
+    SELECT gifts.id, SUM(search_index.score) as score_sum, array_agg(search_index.word) as word_matches
+    FROM gifts
+    JOIN search_index
+    ON gifts.id = search_index.gift_id
+    WHERE search_index.word = ANY(words)
+    GROUP BY gifts.id
+  ) res
+  INNER JOIN gifts
+  ON res.id = gifts.id
+  ORDER BY res.score_sum DESC
+  LIMIT range_limit
+  OFFSET range_offset;
+END
+$func$;
+*/
+type SupabaseSearchResult = {
+  id: number;
+  title: string;
+  img: string;
+  score_sum: number;
+  url: string;
+  word_matches: Array<string>;
+};
+async function searchGiftsSupabase(query: string) {
+  const words = query.split(" ")
+    .map(s => sanitizeQueryWord(s))
+    .filter(s => s.length > 0);
+  if (words.length === 0) {
+    return await getGiftsSupabase();
   }
-  else {
-    return getGiftsAxios();
+  const {data, error, status} = await supabase.rpc("search_by_words", {
+    words: words,
+    range_offset: 0,
+    range_limit: 10,
+  }) as {
+    data: Array<SupabaseSearchResult>;
+    error?: any;
+    status: number;
   }
-}
+  const searchResults = data;
 
-export default {
-  getGifts,
-  upsertGift,
-  deleteGift,
-  onExport,
-  resetSearchIndex,
-}
-
-
-async function getSupabaseDbGiftsWithTags() {
-  const { data, error, status } = await supabase.from("gifts").select("*, tags(tag)");
   if (error && status !== 406) {
     console.error("Supabase getGifts Error:", error, status);
   }
-  if (data) {
-    return data as Array<SupabaseGift & { tags: [{tag: string; }] }>;
+  if (searchResults) {
+    const { data, error, status } = await supabase.from("gifts")
+      .select("*, tags(tag)")
+      .in("id", searchResults?.map( res => res.id));
+    if (error && status !== 406) {
+      console.error("Supabase getGifts Error:", error, status);
+    }
+    if (data) {
+      return supabaseGiftsToGiftsMap(data);
+    }
+    else {
+      console.error("Failed to get Supabase gifts", data, error, status);
+    }
   }
   else {
-    console.error("Failed to get Supabase gifts", data, error, status);
+    console.error("Failed to search for Supabase gifts", searchResults, error, status);
   }
-  return [];
-}
-
-async function getGiftsSupabase() {
-  const data = await getSupabaseDbGiftsWithTags();
-  const toReturn: GetGiftsResponse["gifts"] = {};
-  for (const res of data) {
-    // Lie about the type so we can set it to the Gift tags type
-    const dbRes = res as any as SupabaseGift & { tags: string[] };
-    // @ts-ignore
-    const tags = dbRes.tags.map(tagObj => tagObj.tag);
-    dbRes.tags = tags;
-    const gift: Gift = dbRes;
-    toReturn[gift.id] = gift;
-  }
-  return toReturn;
-}
-
-async function getGiftsAxios() {
-  const resp = await axios.post(BASE_URL + "/getgifts", {});
-  console.log("RESP:", resp);
-  const data: GetGiftsResponse = resp.data;
-  return data.gifts;
-}
-
-async function upsertGiftAxios(gift: Gift) {
-  try {
-    const resp = await axios.post(BASE_URL + "/addgift", {
-      gift,
-    });
-  }
-  catch (error) {
-    console.error("Failed to submit:", error);
-  }
-}
-
-async function upsertGiftSupabase(gift: Gift) {
-  try {
-    const resp = await axios.post(BASE_URL + "/setgiftdetails", {
-      gift,
-    });
-    const data: SetGiftDetailsResponse = resp.data;
-    const supabaseGift = data.gift;
-    const { error } = await supabaseAdmin.from("gifts").upsert(supabaseGift, {
-      returning: "minimal",
-    });
-    if (error) {
-      console.error("Failed to submit supabase gifts:", error);
-    }
-    for (const tag of gift.tags) {
-      const supabaseTag: SupabaseTag = {
-        gift_id: gift.id,
-        tag: tag,
-      }
-      const { error } = await supabaseAdmin.from("tags").upsert(supabaseTag, {
-        returning: "minimal",
-      });
-      if (error) {
-        console.error("Failed to submit supabase tag:", tag, error);
-      }
-    }
-  }
-  catch (error) {
-    console.error("Failed to set details and submit supabase gift:", error);
-  }
-}
-
-async function deleteGiftAxios(gift: Gift) {
-  const resp = await axios.post(BASE_URL + "/deletegift", {
-    gift,
-  });
-}
-
-async function deleteGiftSupabase(gift: Gift) {
-
-  {
-    const { error } = await supabaseAdmin.from("tags").delete().match({ gift_id: gift.id });
-    if (error) {
-      console.error("Failed to delete gift tags from supabase:", error);
-    }
-  }
-  {
-    let { error } = await supabaseAdmin.from("gifts").delete().match({ id: gift.id });
-    if (error) {
-      console.error("Failed to delete gift from supabase:", error);
-    }
-  }
+  return {};
 }
