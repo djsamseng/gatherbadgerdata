@@ -1,14 +1,14 @@
 import React, { ReactType } from "react";
-import axios from "axios";
+
+
 import "./App.css";
 
-import { GetGiftsResponse, Gift } from "../../server/src/app";
-
-const BASE_URL = "http://localhost:4000";
+import { GetGiftsResponse, Gift, SupabaseGift, SupabaseTag, SetGiftDetailsResponse } from "../../server/src/app";
+import DataClient from "./DataClient";
 
 function newGift(): Gift {
   return {
-    id: "",
+    id: 0,
     title: "",
     real_title: "",
     url: "",
@@ -83,7 +83,7 @@ type GiftFormProps = {
   refresh: () => {};
 }
 type GiftFormState = {
-  id: string;
+  id: number;
   title: string;
   real_title: string;
   amazon: string;
@@ -101,7 +101,7 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
   constructor(props: GiftFormProps) {
     super(props);
     const state = {
-      id: "",
+      id: -1,
       title: "",
       real_title: "",
       amazon: "",
@@ -200,6 +200,12 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
         score,
       })
     }
+    else if (evt.target.name === "id") {
+      let id = parseInt(evt.target.value);
+      this.setState({
+        id,
+      });
+    }
     else {
       this.setState({
         [evt.target.name]: evt.target.value,
@@ -218,14 +224,7 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
   private async onSubmit(evt: React.FormEvent<HTMLFormElement>) {
     evt.preventDefault();
     const gift = this.getGiftFromState();
-    try {
-      const resp = await axios.post(BASE_URL + "/addgift", {
-        gift,
-      });
-    }
-    catch (error) {
-      console.error("Failed to submit:", error);
-    }
+    await DataClient.upsertGift(gift);
     this.props.refresh();
   }
 
@@ -382,17 +381,13 @@ class App extends React.Component<AppProps, AppState> {
 
   private async onDelete(gift: Gift, evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
-    const resp = await axios.post(BASE_URL + "/deletegift", {
-      gift,
-    });
+    await DataClient.deleteGift(gift);
     this.getGifts();
   }
 
   private async onExport(evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
-    const resp = await axios.post(BASE_URL + "/exportgifts", {
-      gifts: this.state.gifts,
-    });
+    await DataClient.onExport(this.state.gifts);
   }
 
   private async onSort(evt: React.MouseEvent<HTMLButtonElement>) {
@@ -403,23 +398,15 @@ class App extends React.Component<AppProps, AppState> {
   private async onUpdateAll(evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
     for (const gift of Object.values(this.state.gifts)) {
-      try {
-        const resp = await axios.post(BASE_URL + "/addgift", {
-          gift,
-        });
-      }
-      catch (error) {
-        console.error("Failed to updateAll:", error, "for gift:", gift);
-      }
+      await DataClient.upsertGift(gift);
     }
     await this.getGifts();
   }
 
   private async getGifts() {
-    const resp = await axios.post(BASE_URL + "/getgifts", {});
-    const data: GetGiftsResponse = resp.data;
+    const gifts = await DataClient.getGifts();
     this.setState({
-      gifts: data.gifts,
+      gifts,
       editGift: newGift(),
     })
   }

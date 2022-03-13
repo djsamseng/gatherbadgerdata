@@ -5,6 +5,7 @@ import Sqlite from "sqlite3";
 import fs from "fs";
 import axios from "axios";
 import Cheerio from "cheerio";
+import { json } from "stream/consumers";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -27,19 +28,20 @@ db.serialize(() => {
       iframe TEXT,
       img_amazon_ad TEXT,
       img_amazon_orig TEXT,
-      desc TEXT,
-      price REAL,
-      real_title TEXT,
-      real_desc TEXT
+      custom_desc TEXT NOT NULL,
+      price REAL NOT NULL,
+      real_title TEXT NOT NULL,
+      real_desc TEXT NOT NULL,
+      score INTEGER NOT NULL
     )
   `)
 
   db.run(`
-    CREATE TABLE IF NOT EXISTS tags2 (
-      tag_id INTEGER PRIMARY KEY,
+    CREATE TABLE IF NOT EXISTS tags (
       gift_id INTEGER NOT NULL,
       tag TEXT NOT NULL,
 
+      PRIMARY KEY(gift_id, tag),
       FOREIGN KEY(gift_id) REFERENCES gifts(id)
     )
   `);
@@ -240,7 +242,7 @@ async function deleteGift(gift: Gift) {
 }
 
 export type Gift = {
-  id: string;
+  id: number;
   title: string;
   real_title: string;
   url: string;
@@ -306,7 +308,7 @@ export type AddGiftRequest = {
 routes.post("/addgift", jsonParser, async(req: Request<AddGiftRequest>, resp) => {
   const gift: Gift = req.body.gift;
   try {
-    if (gift.id.length > 0 || (gift.id as any as number) > 0) {
+    if (gift.id > 0) {
       await updateExistingGift(gift);
     }
     else {
@@ -350,5 +352,51 @@ routes.post("/exportgifts", jsonParser, async(req: Request<ExportGiftsRequest>, 
       return;
     }
     resp.send({});
+  });
+});
+
+export type SetGiftDetailsRequest = {
+  gift: Gift;
+};
+export type SupabaseGift = {
+  id: number;
+  url: string;
+  img: string;
+  title: string;
+  iframe?: string;
+  img_amazon_ad?: string;
+  img_amazon_orig?: string;
+  custom_desc: string;
+  price: number;
+  real_title: string;
+  real_desc: string;
+  score: number;
+}
+export type SupabaseTag = {
+  gift_id: number;
+  tag: string;
+}
+export type SetGiftDetailsResponse = {
+  gift: SupabaseGift
+};
+routes.post("/setgiftdetails", jsonParser, async(req: Request<SetGiftDetailsRequest>, resp: Response<SetGiftDetailsResponse>) => {
+  const gift: Gift = req.body.gift;
+  await setAmazonDetails(req.body.gift);
+  const out: SupabaseGift = {
+    id: gift.id,
+    url: gift.url,
+    img: gift.img,
+    title: gift.title,
+    iframe: gift.iframe,
+    img_amazon_ad: gift.img_amazon_ad,
+    img_amazon_orig: gift.img_amazon_orig,
+    custom_desc: gift.desc || "",
+    price: gift.price,
+    real_title: gift.real_title,
+    real_desc: gift.real_desc,
+    score: gift.score,
+  }
+  resp.send({
+    gift: out,
   });
 });
