@@ -30,5 +30,5 @@ REACT_APP_SUPABASE_SERVICE_KEY="service_key_from_supabase_start"
 ```
 
 - In Supabase Studio use the sql editor to create tables. See `server/src/app.ts` for create table SQL
-- Enable row level security for gifts and tags (this blocks all access except for the service key)
-- Add policies to allow reads for gifts and tags
+- Enable row level security for gifts, tags and search_index (this blocks all access except for the service key)
+- Add policies to allow reads for gifts, tags and search_index

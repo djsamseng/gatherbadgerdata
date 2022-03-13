@@ -45,6 +45,9 @@ db.serialize(() => {
       FOREIGN KEY(gift_id) REFERENCES gifts(id)
     )
   `);
+  db.run(`
+    CREATE TABLE IF NOT EXISTS search_index ( word TEXT NOT NULL, gift_id INTEGER NOT NULL, score REAL NOT NULL, PRIMARY KEY(word, gift_id), FOREIGN KEY(gift_id) REFERENCES gifts(id))
+  `)
   db.all(`
     SELECT COUNT(*) AS num_rows FROM tags2
   `, (error, rows) => {

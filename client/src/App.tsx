@@ -305,7 +305,7 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   public render() {
-    const gifts = Object.values(this.state.gifts).sort((a, b) => b.score - a.score);
+    const gifts = Object.values(this.state.gifts); //.sort((a, b) => b.score - a.score);
     return (
         <div className="App">
           <div className="App-header">
@@ -316,6 +316,7 @@ class App extends React.Component<AppProps, AppState> {
               <button type="button" className="border rounded border-white px-2" onClick={this.onExport.bind(this)}>Export</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onSort.bind(this)}>Sort</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onUpdateAll.bind(this)}>Update All</button>
+              <button type="button" className="border rounded border-white px-2" onClick={this.onResetSearchIndex.bind(this)}>Reset Search Index</button>
             </div>
             <ul className="mb-10 list-none flex flex-col items-stretch">
               {
@@ -401,6 +402,11 @@ class App extends React.Component<AppProps, AppState> {
       await DataClient.upsertGift(gift);
     }
     await this.getGifts();
+  }
+
+  private async onResetSearchIndex(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    await DataClient.resetSearchIndex();
   }
 
   private async getGifts() {
