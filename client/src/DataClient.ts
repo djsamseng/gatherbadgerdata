@@ -6,16 +6,31 @@ import { stringify } from "querystring";
 
 const BASE_URL = "http://localhost:4000";
 
-const supabaseURL = process.env.REACT_APP_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY as string;
-
-const supabaseServiceKey = process.env.REACT_APP_SUPABASE_SERVICE_KEY as string;
-
-const supabase = createClient(supabaseURL, supabaseAnonKey);
-const supabaseAdmin = createClient(supabaseURL, supabaseServiceKey);
-
 const WRITE_TO_SUPABASE = true;
 const READ_FROM_SUPABASE = true;
+const WRITE_TO_REMOTE_SUPABASE = false;
+
+const supabaseURL = process.env.REACT_APP_SUPABASE_URL as string;
+const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY as string;
+const supabaseServiceKey = process.env.REACT_APP_SUPABASE_SERVICE_KEY as string;
+
+const remoteSupabaseURL = process.env.REACT_APP_SUPABASE_REMOTE_URL as string;
+const remoteSupabaseAnonKey = process.env.REACT_APP_SUPABASE_REMOTE_ANON_KEY as string;
+const remoteSupabaseServiceKey = process.env.REACT_APP_SUPABASE_REMOTE_SERVICE_KEY as string;
+
+const supabase = createClient(supabaseURL, supabaseAnonKey);
+
+function getAdmin() {
+  if (WRITE_TO_REMOTE_SUPABASE) {
+    return createClient(remoteSupabaseURL, remoteSupabaseServiceKey);
+  }
+  else {
+    return createClient(supabaseURL, supabaseServiceKey);
+  }
+}
+const supabaseAdmin = getAdmin();
+
+
 
 async function upsertGift(gift: Gift) {
   if (WRITE_TO_SUPABASE) {
