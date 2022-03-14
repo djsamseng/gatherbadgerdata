@@ -403,3 +403,28 @@ routes.post("/setgiftdetails", jsonParser, async(req: Request<SetGiftDetailsRequ
     gift: out,
   });
 });
+
+routes.post("/writefile", jsonParser, async(req, resp) => {
+  const filePath = "./" + req.body.filename;
+  const dataString = JSON.stringify({
+    data: Object.values(req.body.data),
+  }, null, 4);
+  console.log(filePath);
+  fs.writeFile(filePath, dataString, (error) => {
+    if (error) {
+      console.error(error);
+    }
+    resp.send({});
+  });
+})
+
+routes.post("/getfile", jsonParser, async(req, resp) => {
+  const filePath = "./" + req.body.filename;
+  console.log(filePath);
+  fs.readFile(filePath, (error, data) => {
+    if (error) {
+      console.error(error);
+    }
+    resp.send(data);
+  });
+})

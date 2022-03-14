@@ -2,13 +2,15 @@
 import axios from "axios";
 import { createClient } from "@supabase/supabase-js";
 import { GetGiftsResponse, Gift, SupabaseGift, SupabaseTag, SetGiftDetailsResponse } from "../../server/src/app";
-import { stringify } from "querystring";
+import { time } from "console";
+import { write } from "fs";
 
 const BASE_URL = "http://localhost:4000";
 
 const WRITE_TO_SUPABASE = true;
 const READ_FROM_SUPABASE = true;
 const WRITE_TO_REMOTE_SUPABASE = false;
+const READ_FROM_REMOTE_SUPABASE = false;
 
 const supabaseURL = process.env.REACT_APP_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.REACT_APP_SUPABASE_ANON_KEY as string;
@@ -18,8 +20,15 @@ const remoteSupabaseURL = process.env.REACT_APP_SUPABASE_REMOTE_URL as string;
 const remoteSupabaseAnonKey = process.env.REACT_APP_SUPABASE_REMOTE_ANON_KEY as string;
 const remoteSupabaseServiceKey = process.env.REACT_APP_SUPABASE_REMOTE_SERVICE_KEY as string;
 
-const supabase = createClient(supabaseURL, supabaseAnonKey);
-
+function getSupabase() {
+  if (READ_FROM_REMOTE_SUPABASE) {
+    return createClient(remoteSupabaseURL, remoteSupabaseAnonKey);
+  }
+  else {
+    return createClient(supabaseURL, supabaseAnonKey);
+  }
+}
+const supabase = getSupabase();
 function getAdmin() {
   if (WRITE_TO_REMOTE_SUPABASE) {
     return createClient(remoteSupabaseURL, remoteSupabaseServiceKey);
@@ -50,10 +59,41 @@ async function deleteGift(gift: Gift) {
   }
 }
 
+async function wait(ms: number) {
+  return new Promise(fulfill => {
+    setTimeout(() => {
+      fulfill({});
+    }, ms);
+  })
+}
 async function onExport(gifts: GetGiftsResponse["gifts"]) {
-  const resp = await axios.post(BASE_URL + "/exportgifts", {
-    gifts: gifts,
-  });
+  if (READ_FROM_REMOTE_SUPABASE) {
+    window.alert("Not exporting from remote");
+    return;
+  }
+  await exportGiftsToJson();
+  await wait(1000);
+  await exportTagsToJson();
+  await wait(1000);
+  await exportSearchIndexToJson();
+}
+async function initLocalDatabase() {
+  if (WRITE_TO_REMOTE_SUPABASE) {
+    window.alert("Cannot init local database when admin is remote");
+    return;
+  }
+  const gifts = await getFile("gifts.json");
+  await wait(1000);
+  const tags = await getFile("tags.json");
+  await wait(1000);
+  const search_index = await getFile("search_index.json");
+  console.log("initLocalDatabase", gifts, tags, search_index);
+  await deleteTable("search_index");
+  await deleteTable("tags");
+  await deleteTable("gifts");
+  await writeTable("gifts", gifts.data);
+  await writeTable("tags", tags.data);
+  await writeTable("search_index", search_index.data);
 }
 
 async function resetSearchIndex() {
@@ -80,6 +120,7 @@ export default {
   onExport,
   resetSearchIndex,
   searchGifts,
+  initLocalDatabase,
 }
 
 
@@ -306,7 +347,34 @@ async function resetSearchIndexSupabase() {
 }
 
 /*
-DROP FUNCTION search_by_words;
+CREATE TABLE IF NOT EXISTS gifts (
+  id INTEGER PRIMARY KEY,
+  url TEXT NOT NULL,
+  img TEXT NOT NULL,
+  title TEXT NOT NULL,
+  iframe TEXT,
+  img_amazon_ad TEXT,
+  img_amazon_orig TEXT,
+  custom_desc TEXT NOT NULL,
+  price REAL NOT NULL,
+  real_title TEXT NOT NULL,
+  real_desc TEXT NOT NULL,
+  score INTEGER NOT NULL
+);
+CREATE TABLE IF NOT EXISTS tags (
+  gift_id INTEGER NOT NULL,
+  tag TEXT NOT NULL,
+
+  PRIMARY KEY(gift_id, tag),
+  FOREIGN KEY(gift_id) REFERENCES gifts(id)
+);
+CREATE TABLE IF NOT EXISTS search_index (
+  word TEXT NOT NULL,
+  gift_id INTEGER NOT NULL,
+  score REAL NOT NULL,
+  PRIMARY KEY(word, gift_id),
+  FOREIGN KEY(gift_id) REFERENCES gifts(id)
+);
 CREATE OR REPLACE FUNCTION search_by_words(words TEXT[], range_offset INTEGER, range_limit INTEGER)
   RETURNS TABLE(id INTEGER,
                 title TEXT,
@@ -343,6 +411,7 @@ type SupabaseSearchResult = {
   img: string;
   score_sum: number;
   url: string;
+  custom_desc: string;
   word_matches: Array<string>;
 };
 async function searchGiftsSupabase(query: string) {
@@ -384,4 +453,77 @@ async function searchGiftsSupabase(query: string) {
     console.error("Failed to search for Supabase gifts", searchResults, error, status);
   }
   return {};
+}
+
+async function deleteTable(tableName: string) {
+  {
+    const { error } = await supabaseAdmin.from(tableName).delete();
+    if (error) {
+      console.error("Supabase writeTable Error:", error, tableName);
+    }
+  }
+}
+async function writeTable(tableName: string, data:Array<any>) {
+  if (data.length === 0) {
+    window.alert("Not writing with empty data");
+    return;
+  }
+
+  {
+    const { error } = await supabaseAdmin.from(tableName).upsert(data, { returning: "minimal", });
+    if (error) {
+      console.error("Supabase writeTable Error:", error, tableName);
+    }
+  }
+}
+async function getTable(tableName: string) {
+  const { data, error, status } = await supabase.from(tableName).select("*");
+  if (error && status !== 406) {
+    console.error("Supabase getGifts Error:", error, status);
+    throw error;
+  }
+  if (data) {
+    return data as Array<SupabaseGift & { tags: [{tag: string; }] }>;
+  }
+  console.error("Failed to get Supabase gifts", data, error, status);
+  throw new Error("Failed to get Supabase gifts" + data + error + status);
+}
+async function writeFile(filename: string, data:any) {
+  try {
+    const resp = await axios.post(BASE_URL + "/writefile", {
+      filename,
+      data,
+    })
+  }
+  catch (error) {
+    console.error("Failed to write file", filename, error);
+  }
+}
+async function getFile(filename: string) {
+  try {
+    const resp = await axios.post(BASE_URL + "/getfile", {
+      filename,
+    });
+    return resp.data;
+  }
+  catch (error) {
+    console.error("Failed to get file", filename, error);
+  }
+}
+async function exportGiftsToJson() {
+  const gifts = await getTable("gifts") as Array<SupabaseGift>;
+  await writeFile("gifts.json", gifts);
+}
+async function exportTagsToJson() {
+  const tags = await getTable("tags") as unknown as Array<SupabaseTag>;
+  await writeFile("tags.json", tags);
+}
+export type SupabaseSearchIndex = {
+  word: string;
+  gift_id: number;
+  score: number;
+}
+async function exportSearchIndexToJson() {
+  const searchIndex = await getTable("search_index") as unknown as Array<SupabaseSearchIndex>;
+  await writeFile("search_index.json", searchIndex);
 }

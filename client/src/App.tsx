@@ -319,6 +319,7 @@ class App extends React.Component<AppProps, AppState> {
               <button type="button" className="border rounded border-white px-2" onClick={this.onSort.bind(this)}>Sort</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onUpdateAll.bind(this)}>Update All</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onResetSearchIndex.bind(this)}>Reset Search Index</button>
+              <button type="button" className="border rounded border-white px-2" onClick={this.onInitLocal.bind(this)}>Init Local Database</button>
             </div>
             <form className="mb-10 space-x-2 w-3/4 flex flex-col items-stretch" onSubmit={this.onSearchSubmit.bind(this)}>
               <input type="text" className="text-black flex-1" value={this.state.searchText} onChange={this.onSearchTextChange.bind(this)} />
@@ -395,6 +396,11 @@ class App extends React.Component<AppProps, AppState> {
   private async onExport(evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
     await DataClient.onExport(this.state.gifts);
+  }
+
+  private async onInitLocal(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    await DataClient.initLocalDatabase();
   }
 
   private async onSort(evt: React.MouseEvent<HTMLButtonElement>) {

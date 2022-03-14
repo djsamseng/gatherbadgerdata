@@ -10,6 +10,11 @@ cd client && yarn install
 supabase init
 ```
 
+## Local Database Data Setup
+1. Copy and paste SQL from client/src/DataClient.ts to create tables and rpc's
+2. Start server and client
+3. In localhost:3000 press Init Local Database
+
 ## Run
 ```bash
 cd server && yarn start
