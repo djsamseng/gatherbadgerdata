@@ -9,7 +9,7 @@ import { json } from "stream/consumers";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const jsonParser = bodyParser.json();
+const jsonParser = bodyParser.json({limit: "10000kb"});
 const routes = Router();
 
 app.use(cors());
