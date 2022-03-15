@@ -1,9 +1,10 @@
 
 import axios from "axios";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
 import { GetGiftsResponse, Gift, SupabaseGift, SupabaseTag, SetGiftDetailsResponse } from "../../server/src/app";
 import { time } from "console";
 import { write } from "fs";
+import { stemmer } from "stemmer";
 
 const BASE_URL = "http://localhost:4000";
 
@@ -20,6 +21,8 @@ const remoteSupabaseURL = process.env.REACT_APP_SUPABASE_REMOTE_URL as string;
 const remoteSupabaseAnonKey = process.env.REACT_APP_SUPABASE_REMOTE_ANON_KEY as string;
 const remoteSupabaseServiceKey = process.env.REACT_APP_SUPABASE_REMOTE_SERVICE_KEY as string;
 
+const remoteSupabaseAdmin = createClient(remoteSupabaseURL, remoteSupabaseServiceKey);
+
 function getSupabase() {
   if (READ_FROM_REMOTE_SUPABASE) {
     return createClient(remoteSupabaseURL, remoteSupabaseAnonKey);
@@ -31,7 +34,7 @@ function getSupabase() {
 const supabase = getSupabase();
 function getAdmin() {
   if (WRITE_TO_REMOTE_SUPABASE) {
-    return createClient(remoteSupabaseURL, remoteSupabaseServiceKey);
+    return remoteSupabaseAdmin;
   }
   else {
     return createClient(supabaseURL, supabaseServiceKey);
@@ -77,23 +80,22 @@ async function onExport(gifts: GetGiftsResponse["gifts"]) {
   await wait(1000);
   await exportSearchIndexToJson();
 }
-async function initLocalDatabase() {
-  if (WRITE_TO_REMOTE_SUPABASE) {
+async function initLocalDatabase(remoteOverride = false) {
+  if (WRITE_TO_REMOTE_SUPABASE && !remoteOverride) {
     window.alert("Cannot init local database when admin is remote");
     return;
   }
+  const writer = remoteOverride ? remoteSupabaseAdmin : supabaseAdmin;
   const gifts = await getFile("gifts.json");
-  await wait(1000);
   const tags = await getFile("tags.json");
-  await wait(1000);
   const search_index = await getFile("search_index.json");
   console.log("initLocalDatabase", gifts, tags, search_index);
-  await deleteTable("search_index");
-  await deleteTable("tags");
-  await deleteTable("gifts");
-  await writeTable("gifts", gifts.data);
-  await writeTable("tags", tags.data);
-  await writeTable("search_index", search_index.data);
+  await deleteTable("search_index", writer);
+  await deleteTable("tags", writer);
+  await deleteTable("gifts", writer);
+  await writeTable("gifts", gifts.data, writer);
+  await writeTable("tags", tags.data, writer);
+  await writeTable("search_index", search_index.data, writer);
 }
 
 async function resetSearchIndex() {
@@ -121,6 +123,7 @@ export default {
   resetSearchIndex,
   searchGifts,
   initLocalDatabase,
+  getFile,
 }
 
 
@@ -182,12 +185,38 @@ async function upsertGiftSupabase(gift: Gift) {
     });
     const data: SetGiftDetailsResponse = resp.data;
     const supabaseGift = data.gift;
-    const { error } = await supabaseAdmin.from("gifts").upsert(supabaseGift, {
-      returning: "minimal",
-    });
-    if (error) {
-      console.error("Failed to submit supabase gifts:", error);
+    if (supabaseGift.id === -1) {
+      {
+        const { data, error } = await supabaseAdmin.from("gifts").select("id").order("id", { ascending: false }).limit(1) as {
+          data: any,
+          error: any,
+        };
+        if (error) {
+          console.error("Failed to get new id:", error);
+        }
+        const newId = data[0].id + 1;
+        console.log("Got new id:", newId);
+        supabaseGift.id = newId;
+        gift.id = newId;
+      }
+
+      const { data, error } = await supabaseAdmin.from("gifts").insert([supabaseGift]) as {
+        data: Array<SupabaseSearchResult>;
+        error?: any;
+      }
+      if (error) {
+        console.error("Error in inserting new:", error);
+      }
     }
+    else {
+      const { error } = await supabaseAdmin.from("gifts").upsert(supabaseGift, {
+        returning: "minimal",
+      });
+      if (error) {
+        console.error("Failed to submit supabase gifts:", error);
+      }
+    }
+
     for (const tag of gift.tags) {
       const supabaseTag: SupabaseTag = {
         gift_id: gift.id,
@@ -233,8 +262,15 @@ function sanitizeQueryWord(word: string) {
   word = word.replace(/\W/g, '');
   word = word.trimEnd();
   word = word.trimStart();
+  word = stemmer(word);
   return word;
 }
+
+export type SupabaseSearchIndex = {
+  word: string;
+  gift_id: SupabaseGift["id"];
+  score: number;
+};
 
 async function resetSearchIndexSupabase() {
   const data = await getSupabaseDbGiftsWithTags();
@@ -320,11 +356,7 @@ async function resetSearchIndexSupabase() {
       wordScores[query][gift_id] += 0.001;
     }
   }
-  type SupabaseSearchIndex = {
-    word: string;
-    gift_id: SupabaseGift["id"];
-    score: number;
-  };
+
   const { error } = await supabaseAdmin.from("search_index").delete();
   if (error) {
     console.error("Failed to delete supabase search_index:", error);
@@ -382,12 +414,13 @@ CREATE OR REPLACE FUNCTION search_by_words(words TEXT[], range_offset INTEGER, r
                 url TEXT,
                 custom_desc TEXT,
                 score_sum REAL,
-                word_matches TEXT[])
+                word_matches TEXT[],
+                total_results BIGINT)
   LANGUAGE plpgsql AS
 $func$
 BEGIN
   RETURN QUERY
-  SELECT gifts.id, gifts.title, gifts.img, gifts.url, gifts.custom_desc, res.score_sum, res.word_matches
+  SELECT gifts.id, gifts.title, gifts.img, gifts.url, gifts.custom_desc, res.score_sum, res.word_matches, COUNT(res.id) OVER () as total_results
 
   FROM (
     SELECT gifts.id, SUM(search_index.score) as score_sum, array_agg(search_index.word) as word_matches
@@ -413,6 +446,7 @@ type SupabaseSearchResult = {
   url: string;
   custom_desc: string;
   word_matches: Array<string>;
+  total_results: number;
 };
 async function searchGiftsSupabase(query: string) {
   const words = query.split(" ")
@@ -455,22 +489,22 @@ async function searchGiftsSupabase(query: string) {
   return {};
 }
 
-async function deleteTable(tableName: string) {
+async function deleteTable(tableName: string, supa: SupabaseClient) {
   {
-    const { error } = await supabaseAdmin.from(tableName).delete();
+    const { error } = await supa.from(tableName).delete();
     if (error) {
       console.error("Supabase writeTable Error:", error, tableName);
     }
   }
 }
-async function writeTable(tableName: string, data:Array<any>) {
+async function writeTable(tableName: string, data:Array<any>, supa: SupabaseClient) {
   if (data.length === 0) {
     window.alert("Not writing with empty data");
     return;
   }
 
   {
-    const { error } = await supabaseAdmin.from(tableName).upsert(data, { returning: "minimal", });
+    const { error } = await supa.from(tableName).upsert(data, { returning: "minimal", });
     if (error) {
       console.error("Supabase writeTable Error:", error, tableName);
     }
@@ -518,11 +552,7 @@ async function exportTagsToJson() {
   const tags = await getTable("tags") as unknown as Array<SupabaseTag>;
   await writeFile("tags.json", tags);
 }
-export type SupabaseSearchIndex = {
-  word: string;
-  gift_id: number;
-  score: number;
-}
+
 async function exportSearchIndexToJson() {
   const searchIndex = await getTable("search_index") as unknown as Array<SupabaseSearchIndex>;
   await writeFile("search_index.json", searchIndex);

@@ -55,7 +55,7 @@ class Preview extends React.Component<PreviewProps, PreviewState> {
             </div>
             <p className="mt-1 break-all">{item.desc}</p>
           </a>
-          <div className="mt-2 overflow-hidden">
+          <div className="mt-2 overflow-hidden max-w-5xl">
             {
               item.tags.map(queryMatch => {
                 return (
@@ -290,6 +290,7 @@ type AppState = {
   gifts: GetGiftsResponse["gifts"];
   editGift?: Gift;
   searchText: string;
+  showGifts: boolean;
 };
 
 class App extends React.Component<AppProps, AppState> {
@@ -299,6 +300,7 @@ class App extends React.Component<AppProps, AppState> {
       gifts: {},
       editGift: undefined,
       searchText: "",
+      showGifts: false,
     }
   }
 
@@ -308,6 +310,43 @@ class App extends React.Component<AppProps, AppState> {
 
   public render() {
     const gifts = Object.values(this.state.gifts); //.sort((a, b) => b.score - a.score);
+    const giftsVis = gifts.map(gift => {
+        let tag = (<div></div>);
+        if (gift.img_amazon_orig && gift.img_amazon_orig.length > 0) {
+          tag = (<div className="text-lg">Amazon Link</div>)
+        }
+        return (
+          <div>
+          <div key={gift.id} className="flex flex-row items-center justify-items-stretch">
+            <div className="flex-1 flex flex-col items-stretch my-2">
+              <Preview gift={gift} />
+              {tag}
+            </div>
+            {
+              gift === this.state.editGift ?
+              (
+                <button type="button" className="border rounded bg-blue-800 border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
+              ) :
+              (
+                <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
+              )
+            }
+
+            <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onDelete.bind(this, gift)}>Delete</button>
+          </div>
+          {
+            gift === this.state.editGift ? (
+              <div>
+                <GiftForm key={gift.id} refresh={this.getGifts.bind(this)} gift={gift}/>
+              </div>
+            ) : (
+              <div></div>
+            )
+          }
+          </div>
+
+        );
+      });
     return (
         <div className="App">
           <div className="App-header">
@@ -315,6 +354,7 @@ class App extends React.Component<AppProps, AppState> {
               <GiftForm key={this.state.editGift ? this.state.editGift.id : 0} refresh={this.getGifts.bind(this)} gift={this.state.editGift}/>
             </div>
             <div className="mb-10 space-x-2">
+              <button type="button" className="border rounded border-white px-2" onClick={this.onShowGifts.bind(this)}>Show Gifts</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onExport.bind(this)}>Export</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onSort.bind(this)}>Sort</button>
               <button type="button" className="border rounded border-white px-2" onClick={this.onUpdateAll.bind(this)}>Update All</button>
@@ -326,45 +366,7 @@ class App extends React.Component<AppProps, AppState> {
               <button type="submit" className="border rounded border-white px-2 mt-2" onClick={this.onSearch.bind(this)}>Search</button>
             </form>
             <ul className="mb-10 list-none flex flex-col items-stretch">
-              {
-                gifts.map(gift => {
-                  let tag = (<div></div>);
-                  if (gift.img_amazon_orig && gift.img_amazon_orig.length > 0) {
-                    tag = (<div className="text-lg">Amazon Link</div>)
-                  }
-                  return (
-                    <div>
-                    <div key={gift.id} className="flex flex-row items-center justify-items-stretch">
-                      <div className="flex-1 flex flex-col items-stretch my-2">
-                        <Preview gift={gift} />
-                        {tag}
-                      </div>
-                      {
-                        gift === this.state.editGift ?
-                        (
-                          <button type="button" className="border rounded bg-blue-800 border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
-                        ) :
-                        (
-                          <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onEdit.bind(this, gift)}>Edit</button>
-                        )
-                      }
-
-                      <button type="button" className="border rounded border-white px-2 mx-2" onClick={this.onDelete.bind(this, gift)}>Delete</button>
-                    </div>
-                    {
-                      gift === this.state.editGift ? (
-                        <div>
-                          <GiftForm key={gift.id} refresh={this.getGifts.bind(this)} gift={gift}/>
-                        </div>
-                      ) : (
-                        <div></div>
-                      )
-                    }
-                    </div>
-
-                  );
-                })
-              }
+              { this.state.showGifts ? giftsVis : (<div></div>) }
             </ul>
           </div>
 
@@ -396,6 +398,13 @@ class App extends React.Component<AppProps, AppState> {
   private async onExport(evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
     await DataClient.onExport(this.state.gifts);
+  }
+
+  private async onShowGifts(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    this.setState({
+      showGifts: true,
+    })
   }
 
   private async onInitLocal(evt: React.MouseEvent<HTMLButtonElement>) {

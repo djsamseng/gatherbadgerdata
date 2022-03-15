@@ -1,0 +1,2629 @@
+{
+    "data": [
+        {
+            "word": "1",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "2",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "5",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "8",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "9",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "12",
+            "gift_id": 3,
+            "score": 1.6
+        },
+        {
+            "word": "12",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "15",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "18",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "20",
+            "gift_id": 4,
+            "score": 0.8
+        },
+        {
+            "word": "25",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "35",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "48",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "203",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "550",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "3005001000",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "prank",
+            "gift_id": 1,
+            "score": 1
+        },
+        {
+            "word": "prank",
+            "gift_id": 16,
+            "score": 3.4
+        },
+        {
+            "word": "prank",
+            "gift_id": 17,
+            "score": 3.4
+        },
+        {
+            "word": "joke",
+            "gift_id": 1,
+            "score": 1
+        },
+        {
+            "word": "joke",
+            "gift_id": 4,
+            "score": 1
+        },
+        {
+            "word": "joke",
+            "gift_id": 17,
+            "score": 1
+        },
+        {
+            "word": "golf",
+            "gift_id": 1,
+            "score": 1.8
+        },
+        {
+            "word": "golf",
+            "gift_id": 4,
+            "score": 2.6
+        },
+        {
+            "word": "funni",
+            "gift_id": 1,
+            "score": 1
+        },
+        {
+            "word": "funni",
+            "gift_id": 16,
+            "score": 1.8
+        },
+        {
+            "word": "funni",
+            "gift_id": 17,
+            "score": 1.8
+        },
+        {
+            "word": "cheat",
+            "gift_id": 1,
+            "score": 0.8
+        },
+        {
+            "word": "devic",
+            "gift_id": 1,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 1,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 2,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 3,
+            "score": 14.4
+        },
+        {
+            "word": "",
+            "gift_id": 4,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 5,
+            "score": 13.6
+        },
+        {
+            "word": "",
+            "gift_id": 7,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 8,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 10,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 11,
+            "score": 12.8
+        },
+        {
+            "word": "",
+            "gift_id": 12,
+            "score": 13.6
+        },
+        {
+            "word": "",
+            "gift_id": 14,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 15,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 16,
+            "score": 12.8
+        },
+        {
+            "word": "",
+            "gift_id": 17,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 18,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 19,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 20,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 21,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 22,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 23,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 25,
+            "score": 14.4
+        },
+        {
+            "word": "",
+            "gift_id": 26,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 27,
+            "score": 12.8
+        },
+        {
+            "word": "",
+            "gift_id": 28,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 29,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 30,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 31,
+            "score": 12
+        },
+        {
+            "word": "",
+            "gift_id": 32,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 33,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 34,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 35,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 36,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 37,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 38,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 39,
+            "score": 0.8
+        },
+        {
+            "word": "",
+            "gift_id": 40,
+            "score": 0.8
+        },
+        {
+            "word": "famili",
+            "gift_id": 2,
+            "score": 1.8
+        },
+        {
+            "word": "famili",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "famili",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "pictur",
+            "gift_id": 2,
+            "score": 1
+        },
+        {
+            "word": "pictur",
+            "gift_id": 11,
+            "score": 1
+        },
+        {
+            "word": "pictur",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "person",
+            "gift_id": 2,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 3,
+            "score": 2.6
+        },
+        {
+            "word": "person",
+            "gift_id": 4,
+            "score": 2.6
+        },
+        {
+            "word": "person",
+            "gift_id": 7,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 8,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 10,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 11,
+            "score": 3.4
+        },
+        {
+            "word": "person",
+            "gift_id": 12,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 14,
+            "score": 2.6
+        },
+        {
+            "word": "person",
+            "gift_id": 15,
+            "score": 1
+        },
+        {
+            "word": "person",
+            "gift_id": 19,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 25,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 29,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 30,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 31,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 35,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 36,
+            "score": 1.8
+        },
+        {
+            "word": "person",
+            "gift_id": 37,
+            "score": 1
+        },
+        {
+            "word": "person",
+            "gift_id": 38,
+            "score": 1.8
+        },
+        {
+            "word": "photo",
+            "gift_id": 2,
+            "score": 2.6
+        },
+        {
+            "word": "photo",
+            "gift_id": 7,
+            "score": 1
+        },
+        {
+            "word": "photo",
+            "gift_id": 10,
+            "score": 1
+        },
+        {
+            "word": "photo",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "photo",
+            "gift_id": 29,
+            "score": 1.8
+        },
+        {
+            "word": "photo",
+            "gift_id": 31,
+            "score": 3.4
+        },
+        {
+            "word": "photo",
+            "gift_id": 37,
+            "score": 1.8
+        },
+        {
+            "word": "photo",
+            "gift_id": 38,
+            "score": 1
+        },
+        {
+            "word": "custom",
+            "gift_id": 2,
+            "score": 2.4
+        },
+        {
+            "word": "custom",
+            "gift_id": 4,
+            "score": 0.8
+        },
+        {
+            "word": "custom",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "custom",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "custom",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "custom",
+            "gift_id": 27,
+            "score": 1.6
+        },
+        {
+            "word": "custom",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "custom",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "puzzl",
+            "gift_id": 2,
+            "score": 3.2
+        },
+        {
+            "word": "puzzl",
+            "gift_id": 5,
+            "score": 2.6
+        },
+        {
+            "word": "puzzl",
+            "gift_id": 20,
+            "score": 2.6
+        },
+        {
+            "word": "eaq",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "piec",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "piec",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "from",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "from",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "jigsaw",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "jigsaw",
+            "gift_id": 5,
+            "score": 2.6
+        },
+        {
+            "word": "for",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "for",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "adult",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "adult",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "and",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "and",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "and",
+            "gift_id": 8,
+            "score": 0.8
+        },
+        {
+            "word": "and",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "and",
+            "gift_id": 26,
+            "score": 0.8
+        },
+        {
+            "word": "and",
+            "gift_id": 31,
+            "score": 1.6
+        },
+        {
+            "word": "kid",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "wed",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "wed",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "wed",
+            "gift_id": 28,
+            "score": 1
+        },
+        {
+            "word": "wed",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "graduat",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "gift",
+            "gift_id": 2,
+            "score": 0.8
+        },
+        {
+            "word": "gift",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "gift",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "gift",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "gift",
+            "gift_id": 16,
+            "score": 3.4
+        },
+        {
+            "word": "gift",
+            "gift_id": 17,
+            "score": 3.4
+        },
+        {
+            "word": "gift",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "gift",
+            "gift_id": 28,
+            "score": 1
+        },
+        {
+            "word": "gift",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "hot",
+            "gift_id": 3,
+            "score": 3.4
+        },
+        {
+            "word": "tub",
+            "gift_id": 3,
+            "score": 3.4
+        },
+        {
+            "word": "pool",
+            "gift_id": 3,
+            "score": 1
+        },
+        {
+            "word": "sign",
+            "gift_id": 3,
+            "score": 2.4
+        },
+        {
+            "word": "sign",
+            "gift_id": 11,
+            "score": 1
+        },
+        {
+            "word": "sign",
+            "gift_id": 14,
+            "score": 1.8
+        },
+        {
+            "word": "sign",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "sign",
+            "gift_id": 19,
+            "score": 1.8
+        },
+        {
+            "word": "sign",
+            "gift_id": 30,
+            "score": 1.8
+        },
+        {
+            "word": "welcom",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "to",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "our",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "metal",
+            "gift_id": 3,
+            "score": 1.6
+        },
+        {
+            "word": "durabl",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "x",
+            "gift_id": 3,
+            "score": 1.6
+        },
+        {
+            "word": "x",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "or",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "or",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "or",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "us",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "indooroutdoor",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "great",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "decor",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "decor",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "area",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "under",
+            "gift_id": 3,
+            "score": 0.8
+        },
+        {
+            "word": "a",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "a",
+            "gift_id": 16,
+            "score": 1.6
+        },
+        {
+            "word": "a",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "a",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "name",
+            "gift_id": 14,
+            "score": 1.8
+        },
+        {
+            "word": "the",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "the",
+            "gift_id": 18,
+            "score": 0.8
+        },
+        {
+            "word": "with",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "with",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "with",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "with",
+            "gift_id": 22,
+            "score": 0.8
+        },
+        {
+            "word": "with",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "with",
+            "gift_id": 31,
+            "score": 1.6
+        },
+        {
+            "word": "on",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "strip",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "your",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "your",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "your",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "your",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "your",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "your",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "made",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "in",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "in",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "in",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "ship",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "ball",
+            "gift_id": 4,
+            "score": 2.6
+        },
+        {
+            "word": "callawai",
+            "gift_id": 4,
+            "score": 0.8
+        },
+        {
+            "word": "warbird",
+            "gift_id": 4,
+            "score": 0.8
+        },
+        {
+            "word": "as",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "fit",
+            "gift_id": 34,
+            "score": 1
+        },
+        {
+            "word": "plai",
+            "gift_id": 10,
+            "score": 1.8
+        },
+        {
+            "word": "plai",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "set",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "own",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "creat",
+            "gift_id": 27,
+            "score": 1.8
+        },
+        {
+            "word": "logo",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "corpor",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "event",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "size",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "crossword",
+            "gift_id": 5,
+            "score": 2.6
+        },
+        {
+            "word": "crossword",
+            "gift_id": 20,
+            "score": 2.6
+        },
+        {
+            "word": "dual",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "challeng",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "2nd",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "edit",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "board",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "game",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "game",
+            "gift_id": 10,
+            "score": 1
+        },
+        {
+            "word": "game",
+            "gift_id": 29,
+            "score": 1
+        },
+        {
+            "word": "educ",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "interact",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "brain",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "build",
+            "gift_id": 5,
+            "score": 0.8
+        },
+        {
+            "word": "potato",
+            "gift_id": 7,
+            "score": 1
+        },
+        {
+            "word": "chip",
+            "gift_id": 7,
+            "score": 1.8
+        },
+        {
+            "word": "chip",
+            "gift_id": 29,
+            "score": 3.4
+        },
+        {
+            "word": "bag",
+            "gift_id": 7,
+            "score": 1.8
+        },
+        {
+            "word": "phone",
+            "gift_id": 8,
+            "score": 1.8
+        },
+        {
+            "word": "iphon",
+            "gift_id": 8,
+            "score": 1
+        },
+        {
+            "word": "iphon",
+            "gift_id": 17,
+            "score": 1
+        },
+        {
+            "word": "android",
+            "gift_id": 8,
+            "score": 1
+        },
+        {
+            "word": "batteri",
+            "gift_id": 8,
+            "score": 1.8
+        },
+        {
+            "word": "charger",
+            "gift_id": 8,
+            "score": 1.8
+        },
+        {
+            "word": "card",
+            "gift_id": 10,
+            "score": 1.8
+        },
+        {
+            "word": "wood",
+            "gift_id": 11,
+            "score": 1.8
+        },
+        {
+            "word": "wood",
+            "gift_id": 12,
+            "score": 1.8
+        },
+        {
+            "word": "wood",
+            "gift_id": 19,
+            "score": 1.8
+        },
+        {
+            "word": "plaqu",
+            "gift_id": 11,
+            "score": 2.6
+        },
+        {
+            "word": "plaqu",
+            "gift_id": 38,
+            "score": 1.8
+        },
+        {
+            "word": "messag",
+            "gift_id": 11,
+            "score": 1.8
+        },
+        {
+            "word": "3d",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "laser",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "laser",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "engrav",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "engrav",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "engrav",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "engrav",
+            "gift_id": 25,
+            "score": 2.6
+        },
+        {
+            "word": "engrav",
+            "gift_id": 37,
+            "score": 1.8
+        },
+        {
+            "word": "red",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "alder",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "finish",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "text",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "text",
+            "gift_id": 14,
+            "score": 1.6
+        },
+        {
+            "word": "text",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "housewarm",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "anniversari",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "anniversari",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "anniversari",
+            "gift_id": 38,
+            "score": 1
+        },
+        {
+            "word": "birthdai",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "birthdai",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "birthdai",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "father",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "dai",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "christma",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "8x10",
+            "gift_id": 11,
+            "score": 0.8
+        },
+        {
+            "word": "music",
+            "gift_id": 12,
+            "score": 3.4
+        },
+        {
+            "word": "music",
+            "gift_id": 27,
+            "score": 3.4
+        },
+        {
+            "word": "music",
+            "gift_id": 38,
+            "score": 1.8
+        },
+        {
+            "word": "box",
+            "gift_id": 12,
+            "score": 3.4
+        },
+        {
+            "word": "box",
+            "gift_id": 16,
+            "score": 4.2
+        },
+        {
+            "word": "box",
+            "gift_id": 17,
+            "score": 4.2
+        },
+        {
+            "word": "box",
+            "gift_id": 27,
+            "score": 3.4
+        },
+        {
+            "word": "wooden",
+            "gift_id": 12,
+            "score": 1.6
+        },
+        {
+            "word": "wooden",
+            "gift_id": 15,
+            "score": 1.6
+        },
+        {
+            "word": "anyth",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "differ",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "font",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "somewher",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "over",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "rainbow",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "littl",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "daughter",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "mom",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "valentin",
+            "gift_id": 12,
+            "score": 0.8
+        },
+        {
+            "word": "plate",
+            "gift_id": 14,
+            "score": 1.8
+        },
+        {
+            "word": "plate",
+            "gift_id": 36,
+            "score": 1.8
+        },
+        {
+            "word": "tag",
+            "gift_id": 14,
+            "score": 1.8
+        },
+        {
+            "word": "tag",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "gloss",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "black",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "black",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "brass",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "namepl",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "notch",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "squar",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "round",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "corner",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "choos",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "gold",
+            "gift_id": 14,
+            "score": 0.8
+        },
+        {
+            "word": "garden",
+            "gift_id": 15,
+            "score": 2.6
+        },
+        {
+            "word": "marker",
+            "gift_id": 15,
+            "score": 3.4
+        },
+        {
+            "word": "dii",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "whalin",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "50pc",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "plant",
+            "gift_id": 15,
+            "score": 1.6
+        },
+        {
+            "word": "label",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "pen",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "pen",
+            "gift_id": 32,
+            "score": 1.8
+        },
+        {
+            "word": "waterproof",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "point",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "ecofriendli",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "seed",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "pot",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "herb",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "flower",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "veget",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "cm",
+            "gift_id": 15,
+            "score": 0.8
+        },
+        {
+            "word": "dog",
+            "gift_id": 16,
+            "score": 1.8
+        },
+        {
+            "word": "dog",
+            "gift_id": 26,
+            "score": 1.8
+        },
+        {
+            "word": "puppi",
+            "gift_id": 16,
+            "score": 1
+        },
+        {
+            "word": "pet",
+            "gift_id": 16,
+            "score": 1
+        },
+        {
+            "word": "pet",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "pack",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "pack",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "hide",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "poo",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "wrap",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "wrap",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "real",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "real",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "present",
+            "gift_id": 16,
+            "score": 1.6
+        },
+        {
+            "word": "present",
+            "gift_id": 17,
+            "score": 1.6
+        },
+        {
+            "word": "authent",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "authent",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "pranko",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "pranko",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "gag",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "gag",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "novelti",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "novelti",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "prankster",
+            "gift_id": 16,
+            "score": 0.8
+        },
+        {
+            "word": "prankster",
+            "gift_id": 17,
+            "score": 0.8
+        },
+        {
+            "word": "tech",
+            "gift_id": 17,
+            "score": 1
+        },
+        {
+            "word": "appl",
+            "gift_id": 17,
+            "score": 1
+        },
+        {
+            "word": "iarm",
+            "gift_id": 17,
+            "score": 2.6
+        },
+        {
+            "word": "car",
+            "gift_id": 17,
+            "score": 1
+        },
+        {
+            "word": "car",
+            "gift_id": 36,
+            "score": 1
+        },
+        {
+            "word": "harri",
+            "gift_id": 18,
+            "score": 2.6
+        },
+        {
+            "word": "potter",
+            "gift_id": 18,
+            "score": 2.6
+        },
+        {
+            "word": "tv",
+            "gift_id": 18,
+            "score": 1.8
+        },
+        {
+            "word": "remot",
+            "gift_id": 18,
+            "score": 2.6
+        },
+        {
+            "word": "control",
+            "gift_id": 18,
+            "score": 2.6
+        },
+        {
+            "word": "wand",
+            "gift_id": 18,
+            "score": 2.6
+        },
+        {
+            "word": "magic",
+            "gift_id": 18,
+            "score": 1
+        },
+        {
+            "word": "magician",
+            "gift_id": 18,
+            "score": 1
+        },
+        {
+            "word": "scabbl",
+            "gift_id": 19,
+            "score": 1
+        },
+        {
+            "word": "scrabbl",
+            "gift_id": 19,
+            "score": 1.6
+        },
+        {
+            "word": "home",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "wall",
+            "gift_id": 19,
+            "score": 1.6
+        },
+        {
+            "word": "larg",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "tile",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "letter",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "letter",
+            "gift_id": 22,
+            "score": 2.6
+        },
+        {
+            "word": "rustic",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "art",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "art",
+            "gift_id": 38,
+            "score": 1.8
+        },
+        {
+            "word": "live",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "room",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "bedroom",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "kitchen",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "kitchen",
+            "gift_id": 21,
+            "score": 1
+        },
+        {
+            "word": "kitchen",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "husband",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "wife",
+            "gift_id": 19,
+            "score": 0.8
+        },
+        {
+            "word": "natur",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "scarf",
+            "gift_id": 20,
+            "score": 3.4
+        },
+        {
+            "word": "etwoa",
+            "gift_id": 20,
+            "score": 0.8
+        },
+        {
+            "word": "infin",
+            "gift_id": 20,
+            "score": 0.8
+        },
+        {
+            "word": "circl",
+            "gift_id": 20,
+            "score": 0.8
+        },
+        {
+            "word": "loop",
+            "gift_id": 20,
+            "score": 0.8
+        },
+        {
+            "word": "tenni",
+            "gift_id": 21,
+            "score": 2.6
+        },
+        {
+            "word": "chees",
+            "gift_id": 21,
+            "score": 2.6
+        },
+        {
+            "word": "spreader",
+            "gift_id": 21,
+            "score": 2.6
+        },
+        {
+            "word": "knife",
+            "gift_id": 21,
+            "score": 1
+        },
+        {
+            "word": "cracker",
+            "gift_id": 21,
+            "score": 1
+        },
+        {
+            "word": "wine",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "wine",
+            "gift_id": 26,
+            "score": 2.6
+        },
+        {
+            "word": "thing",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "racket",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "l",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "sliver",
+            "gift_id": 21,
+            "score": 0.8
+        },
+        {
+            "word": "ninja",
+            "gift_id": 22,
+            "score": 1.8
+        },
+        {
+            "word": "sword",
+            "gift_id": 22,
+            "score": 2.6
+        },
+        {
+            "word": "open",
+            "gift_id": 22,
+            "score": 1.8
+        },
+        {
+            "word": "mail",
+            "gift_id": 22,
+            "score": 1
+        },
+        {
+            "word": "offic",
+            "gift_id": 22,
+            "score": 1
+        },
+        {
+            "word": "offic",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "offic",
+            "gift_id": 40,
+            "score": 1
+        },
+        {
+            "word": "mini",
+            "gift_id": 22,
+            "score": 0.8
+        },
+        {
+            "word": "japanes",
+            "gift_id": 22,
+            "score": 0.8
+        },
+        {
+            "word": "samuraininja",
+            "gift_id": 22,
+            "score": 0.8
+        },
+        {
+            "word": "opener1085",
+            "gift_id": 22,
+            "score": 0.8
+        },
+        {
+            "word": "stand3000kincha",
+            "gift_id": 22,
+            "score": 0.8
+        },
+        {
+            "word": "r2d2",
+            "gift_id": 23,
+            "score": 1.8
+        },
+        {
+            "word": "star",
+            "gift_id": 23,
+            "score": 2.6
+        },
+        {
+            "word": "star",
+            "gift_id": 40,
+            "score": 1.8
+        },
+        {
+            "word": "war",
+            "gift_id": 23,
+            "score": 2.6
+        },
+        {
+            "word": "popcorn",
+            "gift_id": 23,
+            "score": 2.6
+        },
+        {
+            "word": "maker",
+            "gift_id": 23,
+            "score": 2.6
+        },
+        {
+            "word": "uncanni",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "brand",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "fulli",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "oper",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "droid",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "applianc",
+            "gift_id": 23,
+            "score": 0.8
+        },
+        {
+            "word": "whiskei",
+            "gift_id": 25,
+            "score": 2.6
+        },
+        {
+            "word": "barrel",
+            "gift_id": 25,
+            "score": 4.2
+        },
+        {
+            "word": "beer",
+            "gift_id": 25,
+            "score": 1
+        },
+        {
+            "word": "drink",
+            "gift_id": 25,
+            "score": 1
+        },
+        {
+            "word": "drink",
+            "gift_id": 35,
+            "score": 1
+        },
+        {
+            "word": "lazer",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "american",
+            "gift_id": 25,
+            "score": 1.6
+        },
+        {
+            "word": "oak",
+            "gift_id": 25,
+            "score": 2.4
+        },
+        {
+            "word": "ag",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "skeeter",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "reserv",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "outlaw",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "gear",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "by",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "hoop",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "liter",
+            "gift_id": 25,
+            "score": 0.8
+        },
+        {
+            "word": "work",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "work",
+            "gift_id": 40,
+            "score": 1
+        },
+        {
+            "word": "deer",
+            "gift_id": 26,
+            "score": 2.6
+        },
+        {
+            "word": "anim",
+            "gift_id": 26,
+            "score": 1.8
+        },
+        {
+            "word": "pourer",
+            "gift_id": 26,
+            "score": 2.6
+        },
+        {
+            "word": "hors",
+            "gift_id": 26,
+            "score": 1.8
+        },
+        {
+            "word": "bear",
+            "gift_id": 26,
+            "score": 1.8
+        },
+        {
+            "word": "stag",
+            "gift_id": 26,
+            "score": 0.8
+        },
+        {
+            "word": "aerat",
+            "gift_id": 26,
+            "score": 0.8
+        },
+        {
+            "word": "also",
+            "gift_id": 26,
+            "score": 0.8
+        },
+        {
+            "word": "avail",
+            "gift_id": 26,
+            "score": 0.8
+        },
+        {
+            "word": "bottl",
+            "gift_id": 34,
+            "score": 1.8
+        },
+        {
+            "word": "hour",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "parti",
+            "gift_id": 28,
+            "score": 1
+        },
+        {
+            "word": "parti",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "tune",
+            "gift_id": 27,
+            "score": 1.8
+        },
+        {
+            "word": "donuma",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "30note",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "melodi",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "doityourself",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "paper",
+            "gift_id": 27,
+            "score": 0.8
+        },
+        {
+            "word": "ic",
+            "gift_id": 33,
+            "score": 1.8
+        },
+        {
+            "word": "cream",
+            "gift_id": 33,
+            "score": 1.8
+        },
+        {
+            "word": "dad",
+            "gift_id": 33,
+            "score": 1.8
+        },
+        {
+            "word": "bowl",
+            "gift_id": 33,
+            "score": 1
+        },
+        {
+            "word": "food",
+            "gift_id": 33,
+            "score": 1
+        },
+        {
+            "word": "desert",
+            "gift_id": 33,
+            "score": 1
+        },
+        {
+            "word": "shovel",
+            "gift_id": 33,
+            "score": 0.8
+        },
+        {
+            "word": "gym",
+            "gift_id": 34,
+            "score": 1
+        },
+        {
+            "word": "water",
+            "gift_id": 34,
+            "score": 1.8
+        },
+        {
+            "word": "dumbbel",
+            "gift_id": 34,
+            "score": 1.8
+        },
+        {
+            "word": "exercis",
+            "gift_id": 34,
+            "score": 1
+        },
+        {
+            "word": "sport",
+            "gift_id": 34,
+            "score": 1
+        },
+        {
+            "word": "sport",
+            "gift_id": 36,
+            "score": 1
+        },
+        {
+            "word": "althet",
+            "gift_id": 34,
+            "score": 1
+        },
+        {
+            "word": "starbuck",
+            "gift_id": 35,
+            "score": 1.8
+        },
+        {
+            "word": "coffe",
+            "gift_id": 35,
+            "score": 1
+        },
+        {
+            "word": "tea",
+            "gift_id": 35,
+            "score": 1
+        },
+        {
+            "word": "cup",
+            "gift_id": 35,
+            "score": 1.8
+        },
+        {
+            "word": "nfl",
+            "gift_id": 36,
+            "score": 1.8
+        },
+        {
+            "word": "footbal",
+            "gift_id": 36,
+            "score": 1
+        },
+        {
+            "word": "licens",
+            "gift_id": 36,
+            "score": 1.8
+        },
+        {
+            "word": "drive",
+            "gift_id": 36,
+            "score": 1
+        },
+        {
+            "word": "fan",
+            "gift_id": 36,
+            "score": 1
+        },
+        {
+            "word": "wallet",
+            "gift_id": 37,
+            "score": 1.8
+        },
+        {
+            "word": "monei",
+            "gift_id": 37,
+            "score": 1
+        },
+        {
+            "word": "favor",
+            "gift_id": 28,
+            "score": 1
+        },
+        {
+            "word": "babi",
+            "gift_id": 28,
+            "score": 1
+        },
+        {
+            "word": "shower",
+            "gift_id": 28,
+            "score": 1
+        },
+        {
+            "word": "towel",
+            "gift_id": 28,
+            "score": 1.8
+        },
+        {
+            "word": "towel",
+            "gift_id": 31,
+            "score": 1
+        },
+        {
+            "word": "cake",
+            "gift_id": 28,
+            "score": 0.8
+        },
+        {
+            "word": "fold",
+            "gift_id": 28,
+            "score": 0.8
+        },
+        {
+            "word": "poker",
+            "gift_id": 29,
+            "score": 3.4
+        },
+        {
+            "word": "deck",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "fundrais",
+            "gift_id": 29,
+            "score": 0.8
+        },
+        {
+            "word": "neon",
+            "gift_id": 30,
+            "score": 1.8
+        },
+        {
+            "word": "led",
+            "gift_id": 30,
+            "score": 1
+        },
+        {
+            "word": "blanket",
+            "gift_id": 31,
+            "score": 3.4
+        },
+        {
+            "word": "warm",
+            "gift_id": 31,
+            "score": 1
+        },
+        {
+            "word": "throw",
+            "gift_id": 31,
+            "score": 1.6
+        },
+        {
+            "word": "lover",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "best",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "friend",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "flannel",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "40x",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "50100x130cm",
+            "gift_id": 31,
+            "score": 0.8
+        },
+        {
+            "word": "syring",
+            "gift_id": 32,
+            "score": 1
+        },
+        {
+            "word": "medic",
+            "gift_id": 32,
+            "score": 1
+        },
+        {
+            "word": "nurs",
+            "gift_id": 32,
+            "score": 1
+        },
+        {
+            "word": "doctor",
+            "gift_id": 32,
+            "score": 1
+        },
+        {
+            "word": "scienc",
+            "gift_id": 32,
+            "score": 1
+        },
+        {
+            "word": "health",
+            "gift_id": 32,
+            "score": 1
+        },
+        {
+            "word": "synring",
+            "gift_id": 32,
+            "score": 0.8
+        },
+        {
+            "word": "song",
+            "gift_id": 38,
+            "score": 1
+        },
+        {
+            "word": "superhero",
+            "gift_id": 39,
+            "score": 1.8
+        },
+        {
+            "word": "superman",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "captain",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "america",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "desk",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "desk",
+            "gift_id": 40,
+            "score": 1
+        },
+        {
+            "word": "chair",
+            "gift_id": 39,
+            "score": 1.8
+        },
+        {
+            "word": "chair",
+            "gift_id": 40,
+            "score": 1.8
+        },
+        {
+            "word": "cape",
+            "gift_id": 39,
+            "score": 1.8
+        },
+        {
+            "word": "cape",
+            "gift_id": 40,
+            "score": 1.8
+        },
+        {
+            "word": "cowork",
+            "gift_id": 39,
+            "score": 1
+        },
+        {
+            "word": "cowork",
+            "gift_id": 40,
+            "score": 1
+        },
+        {
+            "word": "trek",
+            "gift_id": 40,
+            "score": 1.8
+        }
+    ]
+}
