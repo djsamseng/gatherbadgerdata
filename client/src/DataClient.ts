@@ -244,6 +244,12 @@ async function deleteGiftAxios(gift: Gift) {
 async function deleteGiftSupabase(gift: Gift) {
 
   {
+    const { error } = await supabaseAdmin.from("search_index").delete().match({ gift_id: gift.id });
+    if (error) {
+      console.error("Failed to delete gift tags from supabase:", error);
+    }
+  }
+  {
     const { error } = await supabaseAdmin.from("tags").delete().match({ gift_id: gift.id });
     if (error) {
       console.error("Failed to delete gift tags from supabase:", error);

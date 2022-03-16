@@ -133,11 +133,11 @@ class GiftForm extends React.Component<GiftFormProps, GiftFormState> {
     const entries = [
       { label: "Id",                        name: "id",          handler: this.textFieldUpdate.bind(this), disabled: true,  },
       { label: "Title",                     name: "title",       handler: this.textFieldUpdate.bind(this), },
-      { label: "Real Title",                name: "real_title",  handler: this.textFieldUpdate.bind(this), },
       { label: "Amazon Large Image String", name: "amazon",      handler: this.textFieldUpdate.bind(this), },
+      { label: "Tags Comma Seperated",      name: "tags",        handler: this.textFieldUpdate.bind(this), },
+      { label: "Real Title",                name: "real_title",  handler: this.textFieldUpdate.bind(this), },
       { label: "Custom Image",              name: "img",         handler: this.textFieldUpdate.bind(this), },
       { label: "Custom Link",               name: "url",         handler: this.textFieldUpdate.bind(this), },
-      { label: "Tags Comma Seperated",      name: "tags",        handler: this.textFieldUpdate.bind(this), },
       { label: "Description",               name: "desc",        handler: this.textFieldUpdate.bind(this), },
       { label: "Real Description",          name: "real_desc",   handler: this.textFieldUpdate.bind(this), },
       { label: "Price",                     name: "price",       handler: this.textFieldUpdate.bind(this), },
@@ -309,7 +309,12 @@ class App extends React.Component<AppProps, AppState> {
   }
 
   public render() {
-    const gifts = Object.values(this.state.gifts); //.sort((a, b) => b.score - a.score);
+    const gifts = Object.values(this.state.gifts).sort((a, b) => {
+      if (a.score === b.score) {
+        return a.id - b.id;
+      }
+      return b.score - a.score;
+    });
     const giftsVis = gifts.map(gift => {
         let tag = (<div></div>);
         if (gift.img_amazon_orig && gift.img_amazon_orig.length > 0) {
