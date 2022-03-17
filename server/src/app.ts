@@ -5,7 +5,6 @@ import Sqlite from "sqlite3";
 import fs from "fs";
 import axios from "axios";
 import Cheerio from "cheerio";
-import { json } from "stream/consumers";
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -427,4 +426,27 @@ routes.post("/getfile", jsonParser, async(req, resp) => {
     }
     resp.send(data);
   });
-})
+});
+
+routes.post("/getfilesindir", jsonParser, async(req, resp) => {
+  const dirname = req.body.dirname;
+  const fileObjs = fs.readdirSync(dirname);
+  const allLists = fileObjs.map(f => {
+    const path = dirname + "/" + f;
+    const contents = JSON.parse(fs.readFileSync(path, 'utf-8'));
+    return contents;
+  });
+  resp.send({
+    data: allLists,
+  });
+});
+
+routes.post("/writefilesindir", jsonParser, async(req, resp) => {
+  const dirname: string = req.body.dirname;
+  const lists: Array<any> = req.body.data;
+  lists.forEach(list => {
+    const filename = `${dirname}/${list.slug}.json`;
+    fs.writeFileSync(filename, JSON.stringify(list, null, 4));
+  });
+  resp.send({});
+});

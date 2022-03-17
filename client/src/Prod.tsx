@@ -3,7 +3,7 @@ import React from "react";
 import { SupabaseGift, SupabaseTag } from "../../server/src/app";
 import DataClient, { SupabaseSearchIndex } from "./DataClient";
 
-function getItemGrid(items: Array<any>) {
+export function getItemGrid(items: Array<any>) {
   if (items.length === 0) {
     return (<div></div>);
   }
@@ -15,7 +15,7 @@ function getItemGrid(items: Array<any>) {
   const details = items.map(item => {
     return Object.values(item).map((giftVal: any, idx:number) => {
       return (
-        <div className="text-black col-span-1 h-5 overflow-hidden border" key={`${item.id}-${idx}`}>{giftVal}</div>
+        <div className="text-black col-span-1 h-7 overflow-hidden border" key={`${item.id}-${idx}`}>{giftVal}</div>
       )
     });
   })

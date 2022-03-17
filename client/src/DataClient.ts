@@ -5,6 +5,7 @@ import { GetGiftsResponse, Gift, SupabaseGift, SupabaseTag, SetGiftDetailsRespon
 import { time } from "console";
 import { write } from "fs";
 import { stemmer } from "stemmer";
+import { ListJson } from "./Lists";
 
 const BASE_URL = "http://localhost:4000";
 
@@ -117,6 +118,7 @@ async function searchGifts(query: string) {
 
 export default {
   getGifts,
+  getSupabaseDbGiftsWithTags,
   upsertGift,
   deleteGift,
   onExport,
@@ -124,6 +126,8 @@ export default {
   searchGifts,
   initLocalDatabase,
   getFile,
+  getFilesInDir,
+  writeFiles,
   getPendingGifts,
   uploadPendingToProd,
 }
@@ -675,6 +679,30 @@ async function writeFile(filename: string, data:any) {
     console.error("Failed to write file", filename, error);
   }
 }
+async function getFilesInDir(dirname: string) {
+  try {
+    const resp = await axios.post(BASE_URL + "/getfilesindir", {
+      dirname,
+    });
+    return resp.data.data;
+  }
+  catch (error) {
+    console.error("Failed to get file", dirname, error);
+  }
+}
+async function writeFiles(dirname: string, lists: Array<ListJson>) {
+  try {
+    const resp = await axios.post(BASE_URL + "/writefilesindir", {
+      dirname,
+      data: lists,
+    });
+    return resp.data;
+  }
+  catch (error) {
+    console.error("Failed to get file", dirname, error);
+  }
+}
+
 async function getFile(filename: string) {
   try {
     const resp = await axios.post(BASE_URL + "/getfile", {
