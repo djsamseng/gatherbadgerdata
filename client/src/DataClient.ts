@@ -90,9 +90,9 @@ async function initLocalDatabase(remoteOverride = false) {
   const tags = await getFile("tags.json");
   const search_index = await getFile("search_index.json");
   console.log("initLocalDatabase", gifts, tags, search_index);
-  await deleteTable("search_index", writer);
-  await deleteTable("tags", writer);
-  await deleteTable("gifts", writer);
+  //await deleteTable("search_index", writer);
+  //await deleteTable("tags", writer);
+  //await deleteTable("gifts", writer);
   await writeTable("gifts", gifts.data, writer);
   await writeTable("tags", tags.data, writer);
   await writeTable("search_index", search_index.data, writer);
@@ -124,6 +124,8 @@ export default {
   searchGifts,
   initLocalDatabase,
   getFile,
+  getPendingGifts,
+  uploadPendingToProd,
 }
 
 
@@ -178,6 +180,116 @@ async function upsertGiftAxios(gift: Gift) {
   }
 }
 
+type PendingGift = SupabaseGift & {
+  pendingGifts: Array<{ gift_id: number }>;
+  search_index: Array<{ word: string; gift_id:number; score:number;}>;
+  tags: Array<{tag: string}>;
+};
+async function getPendingGifts(): Promise<{
+  gifts: Array<SupabaseGift>;
+  tags: Array<SupabaseTag>;
+  search_index: Array<SupabaseSearchIndex>;
+}> {
+  const { data, error } = await supabase.from("gifts")
+    .select("*, pending_gifts!inner(*), tags(tag), search_index!inner(*)") as {
+      data: Array<PendingGift>;
+      error: any
+    };
+  if (error) {
+    console.error("Failed to pending gifts:", error);
+    return {
+      gifts: [],
+      tags: [],
+      search_index: [],
+    };
+  }
+  const gifts = data.map(g => {
+    return {
+      id: g.id,
+      url: g.url,
+      img: g.img,
+      title: g.title,
+      iframe: g.iframe,
+      img_amazon_ad: g.img_amazon_ad,
+      img_amazon_orig: g.img_amazon_orig,
+      custom_desc: g.custom_desc,
+      price: g.price,
+      real_title: g.real_title,
+      real_desc: g.real_desc,
+      score: g.score,
+    };
+  });
+  const tags = data.reduce((ar, item) => {
+    item.tags.forEach(tag => {
+      ar.push({
+        gift_id: item.id,
+        tag: tag.tag,
+      });
+    })
+    return ar;
+  }, [] as Array<SupabaseTag>);
+  const search_index = data.reduce((ar, item) => {
+    item.search_index.forEach(s => {
+      ar.push(s);
+    })
+    return ar;
+  }, [] as Array<SupabaseSearchIndex>);
+  return {
+    gifts,
+    tags,
+    search_index,
+  }
+}
+
+async function uploadPendingToProd(data: {
+  gifts: Array<SupabaseGift>;
+  tags: Array<SupabaseTag>;
+  search_index: Array<SupabaseSearchIndex>;
+}) {
+  const {
+    gifts,
+    tags,
+    search_index
+  } = data;
+  {
+    const { data, error } = await remoteSupabaseAdmin.from("gifts").insert(gifts, { returning: "minimal" }) as {
+      data: Array<SupabaseSearchResult>;
+      error?: any;
+    }
+    if (error) {
+      console.error("Error in inserting pending gifts:", error);
+    }
+  }
+  {
+    const { data, error } = await remoteSupabaseAdmin.from("tags").insert(tags, { returning: "minimal" }) as {
+      data: Array<SupabaseSearchResult>;
+      error?: any;
+    }
+    if (error) {
+      console.error("Error in inserting pending tags:", error);
+    }
+  }
+  {
+    const { data, error } = await remoteSupabaseAdmin.from("search_index").insert(search_index, { returning: "minimal" }) as {
+      data: Array<SupabaseSearchResult>;
+      error?: any;
+    }
+    if (error) {
+      console.error("Error in inserting pending tags:", error);
+    }
+  }
+  {
+    {
+      const { data, error } = await supabaseAdmin.from("pending_gifts")
+        .delete({ returning: "minimal" })
+        .in("gift_id", gifts.map(g => g.id));
+      if (error) {
+        console.error("Error in removing pending gifts:", error);
+      }
+    }
+  }
+}
+
 async function upsertGiftSupabase(gift: Gift) {
   try {
     const resp = await axios.post(BASE_URL + "/setgiftdetails", {
@@ -200,7 +312,7 @@ async function upsertGiftSupabase(gift: Gift) {
         gift.id = newId;
       }
 
-      const { data, error } = await supabaseAdmin.from("gifts").insert([supabaseGift]) as {
+      const { data, error } = await supabaseAdmin.from("gifts").insert([supabaseGift], { returning: "minimal" }) as {
         data: Array<SupabaseSearchResult>;
         error?: any;
       }
@@ -227,6 +339,20 @@ async function upsertGiftSupabase(gift: Gift) {
       });
       if (error) {
         console.error("Failed to submit supabase tag:", tag, error);
+      }
+    }
+    await setSupabaseSearchEntriesForGift(supabaseGift, gift.tags.map(t => {
+      return {
+        gift_id: supabaseGift.id,
+        tag: t,
+      };
+    }));
+    {
+      const { error } = await supabaseAdmin.from("pending_gifts").insert([{
+        gift_id: supabaseGift.id,
+      }], { returning: "minimal"});
+      if (error) {
+        console.error("Failed to insert pending gift:", supabaseGift.id, error);
       }
     }
   }
@@ -278,12 +404,7 @@ export type SupabaseSearchIndex = {
   score: number;
 };
 
-async function resetSearchIndexSupabase() {
-  const data = await getSupabaseDbGiftsWithTags();
-  if (data.length === 0) {
-    console.error("Failed to get supabase gifts");
-    return;
-  }
+async function setSupabaseSearchEntriesForGift(gift: SupabaseGift, tags: Array<SupabaseTag>) {
   type QueryToGiftObj = {
     tagMatches: Array<SupabaseGift["id"]>;
     titleMatches: Array<SupabaseGift["id"]>;
@@ -297,45 +418,34 @@ async function resetSearchIndexSupabase() {
       descMatches: [],
     } as QueryToGiftObj;
   };
-
-  for (const item of data) {
-    for (const tagObj of item.tags) {
-      const tag = sanitizeQueryWord(tagObj.tag);
-      if (!queryToGift[tag]) {
-        queryToGift[tag] = newRecord();
-      }
-      queryToGift[tag].tagMatches.push(item.id);
+  for (const tagObj of tags) {
+    const tag = sanitizeQueryWord(tagObj.tag);
+    if (!queryToGift[tag]) {
+      queryToGift[tag] = newRecord();
     }
-    for (let titleWord of item.title.split(" ")) {
-      titleWord = sanitizeQueryWord(titleWord);
-      if (!queryToGift[titleWord]) {
-        queryToGift[titleWord] = newRecord();
-      }
-      queryToGift[titleWord].titleMatches.push(item.id);
-    }
-    for (let realTitleWord of item.real_title.split(" ")) {
-      realTitleWord = sanitizeQueryWord(realTitleWord);
-      if (!queryToGift[realTitleWord]) {
-        queryToGift[realTitleWord] = newRecord();
-      }
-      queryToGift[realTitleWord].titleMatches.push(item.id);
-    }
-    if (true) {
-      for (let realDescWord of item.real_desc.split(" ")) {
-        realDescWord = sanitizeQueryWord(realDescWord);
-        if (!queryToGift[realDescWord]) {
-          queryToGift[realDescWord] = newRecord();
-        }
-      }
-    }
+    queryToGift[tag].tagMatches.push(gift.id);
   }
-  // wordUsage not used. "golf" will come up a lot and we want that
-  const wordUsage: Record<string, number> = {};
-  for (const [query, info] of Object.entries(queryToGift)) {
-    if (!wordUsage[query]) {
-      wordUsage[query] = 0;
+  for (let titleWord of gift.title.split(" ")) {
+    titleWord = sanitizeQueryWord(titleWord);
+    if (!queryToGift[titleWord]) {
+      queryToGift[titleWord] = newRecord();
     }
-    wordUsage[query] += info.tagMatches.length + info.titleMatches.length + info.descMatches.length;
+    queryToGift[titleWord].titleMatches.push(gift.id);
+  }
+  for (let realTitleWord of gift.real_title.split(" ")) {
+    realTitleWord = sanitizeQueryWord(realTitleWord);
+    if (!queryToGift[realTitleWord]) {
+      queryToGift[realTitleWord] = newRecord();
+    }
+    queryToGift[realTitleWord].titleMatches.push(gift.id);
+  }
+  if (true) {
+    for (let realDescWord of gift.real_desc.split(" ")) {
+      realDescWord = sanitizeQueryWord(realDescWord);
+      if (!queryToGift[realDescWord]) {
+        queryToGift[realDescWord] = newRecord();
+      }
+    }
   }
 
   const wordScores:Record<string, Record<number, number> > = {}; // { query1: { gift_id1: score1, gift_id2: score2 } }
@@ -363,10 +473,6 @@ async function resetSearchIndexSupabase() {
     }
   }
 
-  const { error } = await supabaseAdmin.from("search_index").delete();
-  if (error) {
-    console.error("Failed to delete supabase search_index:", error);
-  }
   for (const [query, gift_recs] of Object.entries(wordScores)) {
     for (const [gift_id, score] of Object.entries(gift_recs)) {
       const supabaseSearchEntry:SupabaseSearchIndex = {
@@ -382,6 +488,32 @@ async function resetSearchIndexSupabase() {
       }
     }
   }
+}
+
+async function resetSearchIndexSupabase() {
+  const data = await getSupabaseDbGiftsWithTags();
+  if (data.length === 0) {
+    console.error("Failed to get supabase gifts");
+    return;
+  }
+
+  if (false) {
+    const { error } = await supabaseAdmin.from("search_index").delete();
+    if (error) {
+      console.error("Failed to delete supabase search_index:", error);
+    }
+  }
+
+  for (const item of data) {
+    await setSupabaseSearchEntriesForGift(item, item.tags.map(t => {
+      return {
+        gift_id: item.id,
+        tag: t.tag,
+      };
+    }));
+  }
+  // wordUsage not used. "golf" will come up a lot and we want that
+
 }
 
 /*
@@ -411,6 +543,10 @@ CREATE TABLE IF NOT EXISTS search_index (
   gift_id INTEGER NOT NULL,
   score REAL NOT NULL,
   PRIMARY KEY(word, gift_id),
+  FOREIGN KEY(gift_id) REFERENCES gifts(id)
+);
+CREATE TABLE IF NOT EXISTS pending_gifts (
+  gift_id INTEGER PRIMARY KEY,
   FOREIGN KEY(gift_id) REFERENCES gifts(id)
 );
 CREATE OR REPLACE FUNCTION search_by_words(words TEXT[], range_offset INTEGER, range_limit INTEGER)

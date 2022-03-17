@@ -4,15 +4,18 @@ import { SupabaseGift, SupabaseTag } from "../../server/src/app";
 import DataClient, { SupabaseSearchIndex } from "./DataClient";
 
 function getItemGrid(items: Array<any>) {
-  const header = items.length > 0 ? Object.keys(items[0]).map(key => {
+  if (items.length === 0) {
+    return (<div></div>);
+  }
+  const header = Object.keys(items[0]).map(key => {
     return (
-      <div className="text-black col-span-1">{key}</div>
+      <div className="text-black col-span-1" key={key}>{key}</div>
     );
-  }): (<div></div>)
+  })
   const details = items.map(item => {
-    return Object.values(item).map((giftVal: any) => {
+    return Object.values(item).map((giftVal: any, idx:number) => {
       return (
-        <div className="text-black col-span-1 h-5 overflow-hidden border">{giftVal}</div>
+        <div className="text-black col-span-1 h-5 overflow-hidden border" key={`${item.id}-${idx}`}>{giftVal}</div>
       )
     });
   })
@@ -72,14 +75,11 @@ class Prod extends React.Component<{}, ProdState> {
   }
 
   private async getDataFromJsonFiles() {
-    const gifts = await DataClient.getFile("gifts.json");
-    const tags = await DataClient.getFile("tags.json");
-    const search_index = await DataClient.getFile("search_index.json");
-    console.log(gifts.data);
+    const {gifts, tags, search_index} = await DataClient.getPendingGifts();
     this.setState({
-      gifts: gifts.data,
-      tags: tags.data,
-      search_index: search_index.data,
+      gifts,
+      tags,
+      search_index
     });
   }
 
@@ -90,7 +90,11 @@ class Prod extends React.Component<{}, ProdState> {
   private onUploadToProd(evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
     if (this.state.confirmationChecked) {
-      DataClient.initLocalDatabase(true);
+      DataClient.uploadPendingToProd({
+        gifts: this.state.gifts,
+        tags: this.state.tags,
+        search_index: this.state.search_index,
+      });
     }
   }
 }
