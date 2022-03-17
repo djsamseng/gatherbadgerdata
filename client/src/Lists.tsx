@@ -68,7 +68,8 @@ class Lists extends React.Component<ListsProps, ListsState> {
         title: l.title,
         slug: l.slug,
         num_gifts: l.gifts.length,
-        edit: (<button type="button" className="px-5 border rounded" onClick={this.onEditList.bind(this, l)}>Edit</button>)
+        edit: (<button type="button" className="px-5 border rounded" onClick={this.onEditList.bind(this, l)}>Edit</button>),
+        delete: (<button type="button" className="px-5 border rounded" onClick={this.onDeleteList.bind(this, l)}>Delete</button>)
       };
     });
     return (
@@ -76,7 +77,9 @@ class Lists extends React.Component<ListsProps, ListsState> {
         <div className="flex flex-col items-center space-y-5">
           <div className="flex flex-row items-center space-x-2">
             <button type="button" className="border-2 rounded px-4 py-3 border-slate-500 hover:bg-gray-600" onClick={this.onShowAllLists.bind(this)}>Show All Lists</button>
+            <button type="button" className="border-2 rounded px-4 py-3 border-slate-500 hover:bg-gray-600" onClick={this.onNewList.bind(this)}>New List</button>
             <button type="button" className="border-2 rounded px-4 py-3 border-slate-500 hover:bg-gray-600" onClick={this.onExportLists.bind(this)}>Export Lists</button>
+
           </div>
           {
             this.state.editList ? (
@@ -86,7 +89,7 @@ class Lists extends React.Component<ListsProps, ListsState> {
                   <input className="border rounded px-5 py-2 ml-2" type="text" value={this.state.editList.title} onChange={this.onEditListTitleChange.bind(this)}></input>
                 </label>
                 <label className="space-x-2">
-                  Title
+                  Slug
                   <input className="border rounded px-5 py-2" type="text" value={this.state.editList.slug} onChange={this.onEditListSlugChange.bind(this)}></input>
                 </label>
                 <h2 className="text-7xl text-black text-center">In List</h2>
@@ -120,7 +123,7 @@ class Lists extends React.Component<ListsProps, ListsState> {
             ): (
               <div>
                 <h2 className="text-7xl text-black text-center">Lists</h2>
-                <div className="grid grid-cols-4 gap-2 m-2 gap-y-5">
+                <div className="grid grid-cols-5 gap-2 m-2 gap-y-5">
                   { getItemGrid(listHeaders) }
                 </div>
               </div>
@@ -166,10 +169,31 @@ class Lists extends React.Component<ListsProps, ListsState> {
     });
   }
 
+  private async onDeleteList(listItem: ListJson, evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    const lists = this.state.lists.filter(l => l !== listItem);
+    this.setState({
+      lists,
+    })
+  }
+
   private async onShowAllLists(evt: React.MouseEvent<HTMLButtonElement>) {
     evt.preventDefault();
     this.setState({
       editList: undefined,
+    });
+  }
+
+  private async onNewList(evt: React.MouseEvent<HTMLButtonElement>) {
+    evt.preventDefault();
+    const lists = this.state.lists;
+    lists.push({
+      title: "",
+      slug: "",
+      gifts: [],
+    });
+    this.setState({
+      lists,
     });
   }
 
